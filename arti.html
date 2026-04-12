@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constitution of India - Parliament Articles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans">
+
+    <header class="bg-indigo-700 text-white py-12 px-4 shadow-lg">
+        <div class="max-w-5xl mx-auto text-center">
+            <h1 class="text-4xl font-bold mb-4">Constitutional Provisions: Parliament</h1>
+            <p class="text-indigo-100 text-lg">Articles 85 to 123 of the Constitution of India</p>
+            
+            <div class="mt-8 max-w-xl mx-auto relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchInput" placeholder="Search by Article number or keywords (e.g., Speaker, Budget)..." 
+                    class="w-full pl-12 pr-4 py-4 rounded-full border-none shadow-inner text-slate-900 focus:ring-4 focus:ring-indigo-300 outline-none">
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto py-10 px-4">
+        <div id="articlesContainer" class="space-y-4">
+            </div>
+        
+        <div id="noResults" class="text-center py-20 text-slate-500">
+            <i class="fa-solid fa-ghost text-5xl mb-4"></i>
+            <p class="text-xl">No articles found matching your search.</p>
+        </div>
+    </main>
+
+    <script>
+        // The JSON Data
+        const articlesData = {
+  "article 85": "The President decides WHEN and WHERE Parliament meets. The gap between two sessions can NEVER be more than 6 months, so Parliament must meet at least twice a year. The period between one session ending and the next beginning is called the 'Recess'. Three key terms to know — Adjournment: the presiding officer (Speaker/Chairman) temporarily pauses a sitting for hours, days or weeks — this is NOT the President's power; Prorogation: the President ends an entire session — all pending notices lapse but Bills do NOT lapse; Dissolution: the President ends the life of Lok Sabha entirely — all pending Bills and business before LS lapse (Rule of Lapse). Rajya Sabha can NEVER be dissolved — it is permanent. During a National Emergency, LS tenure can be extended by Parliament by 1 year at a time. The President acts on Cabinet advice, not independently.",
+
+  "article 86": "The President can come to Parliament and address one or both Houses. The President can also send written messages about any pending Bill. Whichever House gets the message must deal with it promptly.",
+
+  "article 87": "The President gives a special speech to BOTH Houses sitting together on two occasions: (1) after every general election, and (2) at the start of each year's first session. This speech explains why Parliament has been called. After the speech, Parliament holds a 'Motion of Thanks' debate where MPs can even move amendments to the speech — if an amendment passes, it can act like a no-confidence signal against the government.",
+
+  "article 88": "Ministers and the Attorney-General can speak and participate in ANY House, any joint sitting, or any committee they're assigned to — even if it's not their own House. BUT they can only VOTE in the House they are actually a member of. They enjoy full Parliamentary privileges while participating.",
+
+  "article 89": "The Vice-President of India automatically becomes the Chairman of Rajya Sabha (ex-officio — no separate election needed). Important: the VP/Chairman is NOT a member of Rajya Sabha — he presides over it but does not have a first-instance vote; he only has a casting vote in case of a tie. Rajya Sabha also elects one of its own members as Deputy Chairman.",
+
+  "article 90": "The Deputy Chairman of Rajya Sabha loses the post if: they leave Rajya Sabha; they resign (resignation letter goes to the Chairman); or they are removed. Removal requires a majority of ALL current RS members (Effective Majority — vacancies don't count). A 14-day advance notice is mandatory before the removal motion is moved.",
+
+  "article 91": "If the Chairman's post is empty OR the VP is busy acting as President, the Deputy Chairman steps in. If both are absent from a sitting, whoever the RS rules designate takes over. Anyone filling in has all the same powers as the Chairman.",
+
+  "article 92": "When a removal motion against the Chairman (VP) or Deputy Chairman is being discussed, THAT person cannot preside — even if present. CRITICAL VOTING DISTINCTION: The Chairman (VP) during his OWN removal resolution — can speak and participate BUT CANNOT VOTE AT ALL (not even a first-instance vote). The Deputy Chairman during his own removal resolution — can speak and CAN vote in the first instance but CANNOT cast a tie-breaking vote. This asymmetry exists because the Chairman is the VP who is not a member of RS, while the Deputy Chairman is a member. Compare with Article 96 (Speaker): the Speaker CAN vote in the first instance during his removal resolution.",
+
+  "article 93": "Lok Sabha must elect two of its own members as Speaker and Deputy Speaker. If either post falls vacant, a new election must be held as soon as possible.",
+
+  "article 94": "The Speaker/Deputy Speaker loses the post if they leave Lok Sabha. To resign: Speaker writes to Deputy Speaker; Deputy Speaker writes to Speaker (cross-resignation). Removal needs a majority of ALL current LS members (Effective Majority) with 14 days' notice. Key point: the Speaker does NOT vacate the post when Lok Sabha is dissolved — they stay on until the brand-new Lok Sabha holds its very first meeting. Same rule applies to the Deputy Speaker.",
+
+  "article 95": "If the Speaker's post is vacant or the Speaker is acting as President, the Deputy Speaker steps in. If both are absent from a sitting, whoever the LS rules designate takes the chair. Anyone filling in has all the same powers as the Speaker.",
+
+  "article 96": "When a removal motion against the Speaker or Deputy Speaker is being debated, that person cannot preside — even if present. But they CAN speak, participate, AND vote in the FIRST INSTANCE on the resolution (unlike the Chairman under Art 92 who cannot vote at all). They cannot cast a casting/tie-breaking vote. This article is ONLY about presiding and first-instance voting during removal; normal casting vote rule is in Article 100.",
+
+  "article 97": "The salaries of the Chairman, Deputy Chairman, Speaker, and Deputy Speaker are 'Charged' on the Consolidated Fund of India — meaning Parliament cannot vote to cut them. They are automatically paid without any budget vote.",
+
+  "article 98": "Each House has its own separate staff/secretariat. Parliament can make laws about how this staff is recruited. Until Parliament makes such a law, the President can make interim rules after consulting the Speaker/Chairman. Some posts can be shared between both Houses.",
+
+  "article 99": "Every newly elected/nominated MP must take an oath (or affirmation) as per the Third Schedule before the President or someone the President appoints. They CANNOT sit or vote in Parliament before taking this oath.",
+
+  "article 100": "Decisions in Parliament are by simple majority of members PRESENT and VOTING. The presiding officer (Speaker/Chairman) does NOT vote normally — they only cast a vote to break a TIE (called the Casting Vote). Quorum = 1/10th of the total membership of that House. If quorum is missing, the presiding officer must adjourn. Business can proceed despite vacant seats. Even if someone votes who wasn't supposed to, proceedings remain valid once discovered. Important budget term — 'Guillotine': on the last day allotted for budget discussion, ALL remaining Demands for Grants that haven't been discussed are automatically put to vote together without any debate.",
+
+  "article 101": "You CANNOT be a member of both Parliament and a State Legislature at the same time — you must resign one. If you win two seats in the same House, both become void unless you pick one in time. If an MP skips ALL sittings for 60 days without the House's permission, they lose their seat (adjournment periods of 4+ days, prorogation periods, and leave granted by the House don't count toward the 60 days). Resignation only works if the presiding officer is satisfied it's genuine and not forced.",
+
+  "article 102": "An MP gets disqualified if: they hold an Office of Profit under Central/State Government (unless Parliament exempts it); a court declares them of unsound mind; they are an undischarged insolvent; they are not an Indian citizen or hold foreign allegiance; they are convicted of certain offences under laws like the Representation of the People Act; or they are disqualified under the Tenth Schedule (anti-defection law). Parliament can add more disqualifications by law. TENTH SCHEDULE (Anti-Defection) details — An MP is disqualified for defection if: (1) they voluntarily give up party membership; (2) they vote or abstain contrary to the party whip without prior party permission (party has 15 days to condone it); (3) an independently elected member joins any political party after election; (4) a nominated member joins any political party after 6 months of taking their seat. EXCEPTIONS where defection does NOT disqualify: Merger — if at least 2/3 of the original legislative party members agree to merge with another party, neither the merging members nor those who stay are disqualified; Presiding Officer exception — a member who gives up party membership on becoming Speaker/Chairman and rejoins after leaving that post is not disqualified. NOTE: the old 'split' exception (1/3 members forming a new group) was DELETED by the 91st Amendment in 2003 — splits no longer protect from disqualification.",
+
+  "article 103": "If there's a question about whether an MP is disqualified (other than defection cases), it goes to the President. The President MUST follow whatever the Election Commission says — the EC's opinion is binding. The President's final decision cannot be challenged in any court. Defection cases are different — those are decided by the Speaker (for LS) or Chairman (for RS), not the President.",
+
+  "article 104": "If someone sits or votes in Parliament knowing they're disqualified or haven't yet taken the oath, they face a fine of ₹500 for EVERY DAY they do so. This money is recoverable as a debt to the Union.",
+
+  "article 105": "MPs have complete freedom of speech inside Parliament. Nothing said or voted in Parliament can be used against an MP in any court — ever. Publishing Parliament's official reports, votes, or proceedings is also protected. Until Parliament makes its own law defining privileges, the privileges of the British House of Commons as they existed on 20 June 1979 (the date the 44th Amendment came into force — NOT 1950 as commonly stated) apply. Ministers and the AG also enjoy these protections when participating. IMPORTANT: Parliamentary privileges do NOT extend to the President — the President is not a member of either House.",
+
+  "article 106": "MPs get paid whatever salaries and allowances Parliament decides by law.",
+
+  "article 107": "Any ordinary Bill (not Money Bill, not Constitutional Amendment) can start in EITHER House. Prorogation does NOT kill a pending Bill. If a Bill is pending in RS and LS hasn't yet passed it, dissolution of LS does NOT kill the Bill. BUT if a Bill is pending in LS itself, or LS has passed it but RS hasn't, it DIES when LS is dissolved.",
+
+  "article 108": "If the two Houses hit a deadlock on a Bill — one rejects it, they can't agree on amendments, or 6 months pass without the other House acting — the President can notify his intention to call a JOINT SITTING. Important: the 6-month count excludes any period when the receiving House is prorogued or adjourned for 4+ consecutive days. Once the President issues this notification, NEITHER House can proceed further with the Bill independently — it freezes until the Joint Sitting. If LS is dissolved AFTER the President's notification, the Joint Sitting still happens. At the Joint Sitting: decision is by simple majority of ALL members present and voting from both Houses combined; only LIMITED amendments are allowed — only those made necessary by the delay OR those on the exact points of disagreement between the Houses; no fresh amendments; the presiding officer's ruling on which amendments are admissible is FINAL. Presiding order: Speaker of LS → Deputy Speaker of LS → Deputy Chairman of RS (the Chairman/VP never presides a joint sitting). Lok Sabha's numerical strength (~543 members) vs Rajya Sabha's (~245 members) means LS effectively dominates — this is why it works as a de facto override of RS. Joint Sitting is NOT available for Money Bills or Constitution Amendment Bills. Historical use: Joint Sitting has been held only 3 times ever — Dowry Prohibition Bill (1961), Banking Service Commission Repeal Bill (1978), Prevention of Terrorism Act/POTA (2002).",
+
+  "article 109": "Money Bills can ONLY start in Lok Sabha — never in Rajya Sabha. After LS passes it, RS gets 14 days to return it with suggestions. LS can accept or ignore RS's suggestions — the Bill passes in whatever form LS decides. If RS doesn't return it within 14 days, it's automatically deemed passed by both Houses. RS has NO power to reject or amend a Money Bill — only suggest.",
+
+  "article 110": "A Bill is a Money Bill ONLY IF it deals EXCLUSIVELY with: taxes; government borrowing or guarantees; the Consolidated Fund or Contingency Fund; appropriation of money out of the Consolidated Fund; declaring expenditure as Charged or increasing Charged expenditure; receipt, custody or issue of money from the Consolidated Fund or public account, or AUDIT of the accounts of the Union or a State; or matters incidental to any of the above. A Bill is NOT a Money Bill just because it mentions fines, fees, or local taxes. The Speaker certifies whether a Bill is a Money Bill — this certificate is FINAL and no court can question it. The certificate must be stamped on the Bill when sent to RS and when sent to the President.",
+
+  "article 111": "Once Parliament passes a Bill, the President has three options — formally known as: (1) ABSOLUTE VETO: withhold assent permanently — the Bill dies. Used for Private Member Bills or when a new Cabinet advises the President to reject the old Cabinet's Bill. (2) SUSPENSIVE VETO: send it back for reconsideration with suggestions (cannot do this for Money Bills or Constitutional Amendment Bills). If Parliament passes it again with or without changes, the President MUST sign it — no second veto. (3) POCKET VETO: simply take NO action and keep the Bill pending indefinitely — the Indian Constitution sets NO time limit for the President to act (unlike the USA where the limit is 10 days), making India's 'pocket' bigger. For MONEY BILLS: President cannot return it, can only sign or withhold. For CONSTITUTIONAL AMENDMENT BILLS: the President MUST give assent — the 24th Amendment made this compulsory, no veto at all. For STATE BILLS reserved by Governor for President: President can exercise pocket veto and the state legislature CANNOT override it.",
+
+  "article 112": "The Union Budget = Annual Financial Statement. It splits spending into two buckets: CHARGED expenditure (non-votable — automatically paid, Parliament only discusses it) and VOTED expenditure (Parliament votes on this). Revenue and capital accounts must be shown separately. Charged items include: President's salary/expenses; salaries of RS Chairman & Deputy Chairman and LS Speaker & Deputy Speaker; Supreme Court judges' salaries/pensions; CAG's salary/expenses; UPSC expenses; government debt charges; court judgments/awards; and High Court judges' pensions.",
+
+  "article 113": "Parliament only discusses Charged expenditure — it cannot vote on it. Voted expenditure comes to Lok Sabha as 'Demands for Grants'. LS can approve, reduce, or reject a demand — but CANNOT increase it. Every demand must have the President's recommendation before it's moved. During voting on Demands for Grants, members can move CUT MOTIONS to oppose a demand — three types: (1) Policy Cut — reduce the demand to Re. 1, signalling total disapproval of the policy behind it; (2) Economy Cut — reduce the demand by a specific stated amount; (3) Token Cut — reduce the demand by Rs. 100, used to ventilate a specific grievance. CRITICAL: if a Cut Motion is passed by Lok Sabha, it is treated as a vote of no-confidence — the government must resign. In practice they rarely pass due to party discipline. 'Guillotine': on the last day fixed for budget voting, ALL remaining unvoted Demands are put to vote together without discussion — this ensures the budget is passed on time.",
+
+  "article 114": "After LS votes on grants, an Appropriation Bill must be passed to actually allow money to be withdrawn from the Consolidated Fund. No amendment to an Appropriation Bill is allowed if it tries to change the amount or destination of any already-voted grant. Only Parliament can authorise withdrawal — no money leaves without this law.",
+
+  "article 115": "Three special grants exist: Supplementary Grant — when the original budget amount runs short; Additional Grant — for a brand new service not in the original budget; Excess Grant — for spending that has ALREADY happened beyond what was approved (this needs Public Accounts Committee review and recommendation BEFORE Parliament votes on it).",
+
+  "article 116": "Three special financial tools: Vote on Account — advance money to run the government before the full budget is passed; Vote of Credit — a blank-cheque type grant for sudden, large, hard-to-specify needs (like war); Exceptional Grant — for a special purpose that is not part of normal services for that year.",
+
+  "article 117": "Financial Bill Type 1: Has BOTH Money Bill matters AND other matters. Can only be introduced in LS, only with the President's recommendation. Not a Money Bill (Speaker doesn't certify it). Financial Bill Type 2: Only involves spending from the Consolidated Fund (no Money Bill matters). Can be introduced in EITHER House without prior recommendation — but the President's recommendation is needed before either House considers (debates/votes on) it.",
+
+  "article 118": "Each House makes its own rules for how it runs. For Joint Sittings, the Speaker of Lok Sabha presides. The President makes rules for joint sittings after consulting both the Speaker and the Chairman.",
+
+  "article 119": "Parliament can pass a law to ensure financial business (budget etc.) is completed on time. If there is any conflict between that law and the House's own procedural rules, the law wins.",
+
+  "article 120": "Parliament conducts business in Hindi or English. If a member can't express themselves in either, the presiding officer can allow them to speak in their mother tongue. English was originally supposed to phase out in 1965 but Parliament has continued it by law.",
+
+  "article 121": "Parliament CANNOT discuss the behaviour or conduct of any Supreme Court or High Court judge while they are performing their duties — EXCEPT when a formal motion to remove that judge (impeachment) is being debated.",
+
+  "article 122": "No court can question or interfere with Parliament's internal proceedings by saying the procedure was irregular. Parliamentary officers/members who manage procedure and order inside the House cannot be hauled into court for how they exercise those powers.",
+
+  "article 123": "When BOTH Houses are not in session and urgent action is needed, the President can issue an Ordinance — it has the same legal force as a Parliament-passed law. Important: if even ONE House is in session, no Ordinance can be issued for matters that House can legislate on. An Ordinance dies 6 weeks after Parliament reassembles (counted from whichever House meets LATER). It can also die earlier if both Houses pass resolutions rejecting it (RS alone can kill it too). The President can withdraw an Ordinance anytime. Key limits: an Ordinance CANNOT amend the Constitution. The President CANNOT keep re-issuing the same Ordinance again and again just to avoid Parliament scrutinising it — the Supreme Court ruled that re-promulgation to bypass Parliament is unconstitutional (Krishna Kumar Singh case)."
+};
+
+        const container = document.getElementById('articlesContainer');
+        const searchInput = document.getElementById('searchInput');
+        const noResults = document.getElementById('noResults');
+
+        // Function to render articles
+        function renderArticles(filter = "") {
+            container.innerHTML = "";
+            let hasResults = false;
+
+            Object.entries(articlesData).forEach(([title, content]) => {
+                const lowerTitle = title.toLowerCase();
+                const lowerContent = content.toLowerCase();
+                const searchTerm = filter.toLowerCase();
+
+                if (lowerTitle.includes(searchTerm) || lowerContent.includes(searchTerm)) {
+                    hasResults = true;
+                    
+                    // Create Article Card
+                    const card = document.createElement('div');
+                    card.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all hover:shadow-md";
+                    
+                    // Format the content: Split by semicolons into bullet points for readability
+                    const bulletPoints = content.split(';').map(point => 
+                        `<li class="mb-2 pl-2 border-l-2 border-indigo-100">${point.trim()}</li>`
+                    ).join('');
+
+                    card.innerHTML = `
+                        <div class="p-5 cursor-pointer flex justify-between items-center bg-white hover:bg-slate-50 transition-colors" onclick="toggleCard(this)">
+                            <h2 class="text-xl font-bold text-indigo-700 uppercase tracking-wide">${title}</h2>
+                            <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                        </div>
+                        <div class="article-content p-6 pt-0 border-t border-slate-50">
+                            <ul class="text-slate-700 leading-relaxed list-none">
+                                ${bulletPoints}
+                            </ul>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                }
+            });
+
+            //noResults.classList.toggle('hidden', hasResults);
+        }
+
+        // Toggle Expand/Collapse
+        function toggleCard(headerElement) {
+            const content = headerElement.nextElementSibling;
+            const icon = headerElement.querySelector('i');
+            
+            //content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
+        // Event Listener for Search
+        searchInput.addEventListener('input', (e) => {
+            renderArticles(e.target.value);
+        });
+
+        // Initial Render
+        renderArticles();
+    </script>
+</body>
+</html>
