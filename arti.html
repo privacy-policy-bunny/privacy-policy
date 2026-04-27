@@ -3,177 +3,945 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Constitution of India - Parliament Articles</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Constitution Audit 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --sidebar-bg: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --card-bg: #1e293b;
+            --border: #334155;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar - Always Open */
+        .sidebar {
+            width: 350px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow: hidden;
+            transition: width 0.25s ease, border-color 0.25s ease;
+        }
+
+        .sidebar-collapsed .sidebar {
+            width: 0;
+            border-right-color: transparent;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-header h2 {
+            margin: 0 0 15px 0;
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+        }
+
+        #searchBar {
+            width: 100%;
+            padding: 10px 10px 10px 35px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: #0f172a;
+            color: white;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .article-list {
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.2);
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-item:hover { background: #334155; }
+        .nav-item.active { background: #0ea5e920; border-left: 4px solid var(--accent); color: var(--accent); }
+
+        /* Content Area */
+        .content-area {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .wrapper { max-width: 800px; width: 100%; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1 { margin: 0; font-size: 2rem; }
+
+        .btn-group { display: flex; gap: 10px; }
+
+        button {
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover { border-color: var(--accent); }
+        #bookmarkBtn.active { color: #fbbf24; border-color: #fbbf24; }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .list-view {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding-bottom: 20px;
+        }
+
+        .article-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            line-height: 1.7;
+            font-size: 1.02rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            scroll-margin-top: 20px;
+        }
+
+        .article-card h3 {
+            margin: 0 0 10px 0;
+            color: var(--accent);
+            font-size: 1.2rem;
+            text-transform: capitalize;
+        }
+
+        .article-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .article-card-header h3 {
+            margin: 0;
+            flex: 1;
+        }
+
+        .article-star-btn {
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            border-radius: 8px;
+            background: #0f172a;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .article-star-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .article-star-btn.active {
+            border-color: #fbbf24;
+            color: #fbbf24;
+        }
+
+        .article-card p {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .article-card.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+        }
+
+        .empty-state {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            color: var(--text-dim);
+        }
+
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); }
+        .modal-content { background: var(--sidebar-bg); margin: 10% auto; padding: 25px; width: 400px; border-radius: 12px; }
+        .modal-item { padding: 10px; border-bottom: 1px solid var(--border); cursor: pointer; }
+        .modal-item:hover { color: var(--accent); }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans">
+<body>
 
-    <header class="bg-indigo-700 text-white py-12 px-4 shadow-lg">
-        <div class="max-w-5xl mx-auto text-center">
-            <h1 class="text-4xl font-bold mb-4">Constitutional Provisions: Parliament</h1>
-            <p class="text-indigo-100 text-lg">Articles 85 to 123 of the Constitution of India</p>
-            
-            <div class="mt-8 max-w-xl mx-auto relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input type="text" id="searchInput" placeholder="Search by Article number or keywords (e.g., Speaker, Budget)..." 
-                    class="w-full pl-12 pr-4 py-4 rounded-full border-none shadow-inner text-slate-900 focus:ring-4 focus:ring-indigo-300 outline-none">
-            </div>
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h2>Audit Dashboard</h2>
+        <div class="search-box">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" id="searchBar" placeholder="Search..." onkeyup="doSearch()">
         </div>
-    </header>
+    </div>
+    <div class="article-list" id="articleList"></div>
+</aside>
 
-    <main class="max-w-5xl mx-auto py-10 px-4">
-        <div id="articlesContainer" class="space-y-4">
+<main class="content-area">
+    <div class="wrapper">
+        <header>
+            <div class="header-left">
+                <button id="sidebarToggle" class="icon-btn" onclick="toggleSidebar()" title="Hide sidebar">
+                    <i id="sidebarToggleIcon" class="fa-solid fa-angles-left"></i>
+                </button>
+                <h1 id="title">All Articles</h1>
             </div>
-        
-        <div id="noResults" class="text-center py-20 text-slate-500">
-            <i class="fa-solid fa-ghost text-5xl mb-4"></i>
-            <p class="text-xl">No articles found matching your search.</p>
-        </div>
-    </main>
+            <div class="btn-group">
+                <button id="bookmarkBtn" onclick="toggleBookmark()"><i class="fa-star fa-regular"></i></button>
+                <button onclick="showBookmarks()">Bookmarks (<span id="count">0</span>)</button>
+            </div>
+        </header>
+        <div class="list-view" id="content"></div>
+    </div>
+</main>
 
-    <script>
-        // The JSON Data
-        const articlesData = {
-  "article 85": "The President decides WHEN and WHERE Parliament meets. The gap between two sessions can NEVER be more than 6 months, so Parliament must meet at least twice a year. The period between one session ending and the next beginning is called the 'Recess'. Three key terms to know — Adjournment: the presiding officer (Speaker/Chairman) temporarily pauses a sitting for hours, days or weeks — this is NOT the President's power; Prorogation: the President ends an entire session — all pending notices lapse but Bills do NOT lapse; Dissolution: the President ends the life of Lok Sabha entirely — all pending Bills and business before LS lapse (Rule of Lapse). Rajya Sabha can NEVER be dissolved — it is permanent. During a National Emergency, LS tenure can be extended by Parliament by 1 year at a time. The President acts on Cabinet advice, not independently.",
+<div id="modal" class="modal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3>Saved Articles</h3>
+        <div id="bookmarkList"></div>
+        <button onclick="closeModal()" style="margin-top: 20px; width: 100%;">Close</button>
+    </div>
+</div>
 
-  "article 86": "The President can come to Parliament and address one or both Houses. The President can also send written messages about any pending Bill. Whichever House gets the message must deal with it promptly.",
+<script>
+    // THE DATA: Simple key-value list
+    const constitutionData = {
+  "article 1": "India (Bharat) is a 'Union of States' implying an indestructible union where states cannot secede, States and Union Territories are specified in the First Schedule, Territory of India comprises territories of States/Union Territories and any territories acquired by the Government of India at any time",
+  "article 2": "Parliament may by law admit or establish new States on terms it thinks fit, Specifically relates to the admission of territories not already part of the Union of India, Note: Article 2A (Associate status for Sikkim) was inserted and subsequently repealed by the 36th Amendment when Sikkim became a full State",
+  "article 3": "Parliament can form new States/Union Territories by separating territory or uniting parts, Parliament can increase/diminish area or alter boundaries/names of any State, Procedure: Bill requires President's prior recommendation, President must refer the Bill to the affected State Legislature for views within a specified time limit, State Legislature views are NOT binding, Explanation I: For boundary changes 'State' includes Union Territory but for the reference proviso 'State' does NOT include Union Territory (UTs don't need to be consulted), Explanation II: Parliament can unite a part of a State/UT to any other State/UT",
+  "article 4": "Laws made under Articles 2 and 3 must provide for amendments to the First and Fourth Schedules (representation in Rajya Sabha), Parliament can include supplemental/incidental/consequential provisions, These laws are NOT considered amendments under Article 368 and can be passed by a simple majority",
+  "article 5": "Citizenship at the commencement (Jan 26 1950) for persons domiciled in India, Must meet one condition: Born in India / Either parent born in India / Ordinarily resident for at least 5 years immediately preceding commencement",
+  "article 6": "Citizenship for migrants from Pakistan to India, Person (or parents/grandparents) must be born in Undivided India (as defined in GOI Act 1935), If migrated before July 19 1948: citizen if ordinarily resident since migration, If migrated on/after July 19 1948: must reside for 6 months and be registered by an authorized officer",
+  "article 7": "Migrants to Pakistan after March 1 1947 lose Indian citizenship, Exception: If returning under a permit for resettlement or permanent return they can become citizens by following the same registration process as post-July 19 1948 migrants",
+  "article 8": "Citizenship for Persons of Indian Origin (PIOs) residing outside India (excluding Pakistan), Person (or parents/grandparents) must be born in Undivided India, Must be registered by the diplomatic or consular representative of India in the country of residence",
+  "article 9": "No person shall be a citizen of India if they have voluntarily acquired the citizenship of any foreign State, Indian Constitution prohibits dual citizenship",
+  "article 10": "Every person deemed a citizen under Articles 5 to 9 continues to be a citizen, This right is 'permanent' but subject to any future laws made by Parliament",
+  "article 11": "Parliament is empowered beyond Articles 5 to 10 to regulate citizenship by law; it has plenary power over acquisition, termination and all related citizenship matters, exercised primarily through the Citizenship Act, 1955 (as amended).",
+  "article 12": "Definition of 'The State' for Part III ('In this Part'): includes Government and Parliament of India, Government and Legislature of each State, all local authorities (municipalities/panchayats), and other authorities within the territory of India or under the control of the Government of India.",
+  "article 13": "Judicial review clause for Fundamental Rights: (1) pre-Constitution laws inconsistent with FR are void to the extent of inconsistency (Doctrine of Eclipse), (2) the State shall not make laws taking away or abridging FR and contravening law is void to the extent of contravention (Doctrine of Severability), (3) 'law' includes ordinances/orders/bye-laws/rules/regulations/notifications/customs/usages, (4) inserted by the 24th Amendment: Article 13 does not apply to Constitutional Amendments under Article 368.",
+  "article 14": "Equality before the law and equal protection of the laws; applies to 'any person' (citizens, non-citizens, and juristic persons/corporations), permits reasonable classification (intelligible differentia + rational nexus), and prohibits arbitrariness.",
+  "article 15": "Applies only to citizens: prohibition of discrimination ONLY on grounds of religion/race/caste/sex/place of birth, including access to shops/public restaurants/hotels and places of public resort; exceptions allow special provisions for women/children (15(3)), socially and educationally backward classes/SC/ST (15(4)), admission to educational institutions including private unaided except minority institutions (15(5)), and EWS (15(6)).",
+  "article 16": "Applies only to citizens: equality of opportunity in public employment; no discrimination ONLY on religion/race/caste/sex/descent/place of birth/residence; key exceptions include residence requirement by Parliament for specific posts (16(3)), reservation for backward classes (16(4)), reservation in promotion for SC/ST (16(4A)), carry-forward of unfilled reserved vacancies (16(4B)), religious-office exception (16(5)), and EWS reservation (16(6)).",
+  "article 17": "Abolition of 'Untouchability' and prohibition of its practice in any form; enforcement of disability arising from it is a punishable offence; absolute right enforceable against both State and private persons, implemented through statutes such as the Protection of Civil Rights Act, 1955 and SC/ST (Prevention of Atrocities) Act, 1989.",
+  "article 18": "Abolition of titles: the State shall not confer titles except military or academic distinctions; no citizen shall accept any title from a foreign State; no person holding office of profit or trust under the State shall accept any present/emolument/office/title from a foreign State without President's consent; National Awards (Bharat Ratna/Padma) are valid but cannot be used as titles (prefix/suffix).",
+  "article 19": "Available only to citizens: six freedoms under Article 19(1) are (a) speech/expression, (b) peaceful assembly, (c) associations/unions/co-operative societies (co-operatives added by 97th Amendment), (d) movement, (e) residence/settlement, (g) profession/trade/business; Article 19(1)(f) right to property was deleted by the 44th Amendment (now Article 300A). Restrictions are clause-specific: (2) speech, (3) assembly, (4) association, (5) movement/residence, (6) profession including technical qualifications and State monopoly.",
+  "article 20": "Protection in respect of conviction for offences (applies to all persons, citizens and non-citizens): (1) No ex post facto criminal law (no retrospective conviction or enhanced penalty), (2) No double jeopardy (no person prosecuted and punished for the same offence more than once), (3) No self-incrimination (no accused compelled to be a witness against himself); these safeguards operate in criminal proceedings, not civil/departmental actions.",
+  "article 21": "No person shall be deprived of life or personal liberty except according to procedure established by law; after Maneka Gandhi, procedure must be just, fair and reasonable (substantive due process reading). Applies to citizens and non-citizens, includes rights flowing from dignity (privacy, legal aid, speedy trial, clean environment etc.), and together with Article 20 remains non-suspendable in enforcement even during Emergency (Art 359 proviso, 44th Amendment).",
+  "article 21A": "State shall provide free and compulsory education to all children of 6-14 years in such manner as the State may by law determine; inserted by 86th Amendment Act, 2002 and operationalized mainly through the Right of Children to Free and Compulsory Education Act, 2009; covers elementary stage only (not pre-school/higher/professional education).",
+  "article 22": "Protection against arrest and detention: for ordinary arrest, rights include being informed of grounds, consulting/being defended by lawyer of choice, and production before Magistrate within 24 hours excluding journey time; no detention beyond 24 hours without Magistrate's authority. Clauses (1)-(2) do NOT apply to enemy aliens and preventive detention cases. Preventive detention safeguards: communicate grounds as soon as may be, earliest opportunity to make representation, and no detention beyond 3 months unless Advisory Board reports sufficient cause (with Parliament empowered to prescribe further law).",
+  "article 23": "Prohibits traffic in human beings, begar and other similar forms of forced labour; contravention is punishable by law; applies against both State and private persons and protects citizens and non-citizens. Exception: State may impose compulsory service for public purposes, but without discrimination ONLY on religion/race/caste/class or any of them.",
+  "article 24": "Prohibits employment of children below 14 years in any factory, mine or hazardous employment; this is an absolute constitutional bar for hazardous sectors. UPSC trap: Constitution text does not prohibit all child work, only the specified categories (ordinary/non-hazardous work is governed by statutory law).",
+  "article 25": "All persons are equally entitled to freedom of conscience and to profess, practice and propagate religion, subject to public order, morality, health and other Fundamental Rights. State may regulate/restrict secular (economic, financial, political) activities associated with religion and may enact social welfare/reform laws including opening Hindu religious institutions to all classes/sections; Explanation I recognizes carrying of kirpan as part of Sikh profession of religion; Explanation II: reference to Hindus includes Sikhs, Jains and Buddhists for clause (2)(b).",
+  "article 26": "Every religious denomination or any section thereof has (collective right) to establish and maintain institutions for religious and charitable purposes, manage its own affairs in matters of religion, own/acquire property, and administer such property in accordance with law; subject to public order, morality and health.",
+  "article 27": "No person can be compelled to pay taxes, proceeds of which are specifically appropriated for payment of expenses for promotion or maintenance of any particular religion or religious denomination; exam distinction: regulatory/service fee is permissible, but tax for religious promotion is barred.",
+  "article 28": "Religious instruction in educational institutions: (1) wholly State-maintained institutions - prohibited; (2) State-administered institutions established under endowment/trust requiring such instruction - permitted; (3) institutions recognized by the State or receiving State aid - no person can be compelled to attend religious instruction/worship without consent (or guardian consent for minors).",
+  "article 29": "Cultural and educational rights: Article 29(1) protects the right of any section of citizens (not only minorities) having distinct language, script or culture to conserve it. Article 29(2) bars denial of admission into State-maintained or State-aided educational institutions ONLY on religion, race, caste, language or any of them (UPSC trap: 'sex' and 'place of birth' are not in 29(2)).",
+  "article 30": "All minorities, whether based on religion or language, have the right to establish and administer educational institutions of their choice; minority status is assessed with reference to the State for this purpose. Article 30(1A): on compulsory acquisition of minority institution property, compensation amount must not restrict or abrogate this right. Article 30(2): State shall not discriminate in grant of aid on the ground that an institution is under minority management.",
+  "article 31": "Right to property was removed from Fundamental Rights by the 44th Amendment Act, 1978 (Article 31 repealed); it now survives as a constitutional/legal right under Article 300A ('no person shall be deprived of his property save by authority of law'), so it is enforceable but not as a Part III Fundamental Right.",
+  "article 31A": "Saving of laws for acquisition of estates and certain specified categories from challenge under Articles 14 and 19 (land reform shield): covers acquisition of estates/rights, takeover of management of property, amalgamation of corporations, modification of rights of directors/shareholders/managers, and modification/termination of mining or mineral-oil agreements. Key proviso: where a State law under 31A is reserved for President and receives assent, the protection operates; exam trap - it is not a blanket immunity for every law touching property.",
+  "article 31B": "Validation of laws in the Ninth Schedule: Acts/Regulations placed in the Ninth Schedule are immunized from invalidation for contravention of FR, but post-Kesavananda insertion (after 24 April 1973) is open to judicial review on Basic Structure grounds (I.R. Coelho, 2007).",
+  "article 31C": "Saving of laws giving effect to Directive Principles in Article 39(b) and 39(c): such laws get protection against challenge under Articles 14 and 19, but courts can still examine whether there is real nexus with 39(b)/(c). The 42nd Amendment extension of this shield to all DPSPs was struck down in Minerva Mills (1980); present position remains limited to 39(b) and 39(c).",
+  "article 32": "Right to Constitutional Remedies (itself a Fundamental Right): individuals can directly move the Supreme Court for enforcement of Part III rights; Supreme Court may issue writs (Habeas Corpus, Mandamus, Prohibition, Certiorari, Quo-Warranto). Jurisdiction is original but not exclusive (High Courts also under Art 226); only the Constitution may provide suspension/limitation of this enforcement route.",
+  "article 33": "Parliament (and only Parliament) may by law determine the extent to which FR apply to members of Armed Forces, forces charged with maintenance of public order, intelligence/counter-intelligence organizations, and connected telecom personnel, so as to ensure proper discharge of duties and maintenance of discipline.",
+  "article 34": "Restriction on rights while Martial Law is in force in any area: Parliament may by law indemnify persons for acts done to maintain/restore order and may validate related punishments/forfeitures/sentences; Martial Law is distinct from National Emergency and is not separately defined in the Constitution.",
+  "article 35": "Legislation to give effect to certain Part III provisions: Parliament has exclusive power to make laws on residence requirements for employment (Art 16(3)), conferring writ powers on courts other than SC (Art 32(3)), FR restrictions for disciplined forces (Art 33), indemnity during Martial Law (Art 34), and prescribing punishment for offences under Arts 17 and 23; States cannot legislate on these matters.",
+  "article 36": "Definition clause for Part IV (DPSP): 'State' has the same meaning as in Article 12.",
+  "article 37": "Application of DPSPs: they are non-justiciable (not enforceable by courts), yet fundamental in governance of the country, and it is the duty of the State to apply these principles in making laws.",
+  "article 38": "State to secure a social order for welfare of the people: promote social, economic and political justice; Article 38(2) (added by 44th Amendment) directs minimization of inequalities in income, status, facilities and opportunities not only among individuals but also among groups/regions.",
+  "article 39": "Directive policy principles: (a) adequate means of livelihood for men and women, (b) ownership/control of material resources distributed to subserve common good, (c) operation of economic system should not concentrate wealth/means of production to common detriment, (d) equal pay for equal work, (e) protection of workers' health/strength and children from abuse, (f) children to develop in freedom/dignity and be protected against exploitation and moral/material abandonment.",
+  "article 39A": "Equal justice and free legal aid (added by 42nd Amendment, 1976): State shall secure operation of legal system promoting justice on basis of equal opportunity and provide free legal aid so justice is not denied due to economic or other disabilities.",
+  "article 40": "Organization of village panchayats: State shall take steps to organize village panchayats and endow them with powers/authority necessary to function as units of self-government (Gandhian principle; later institutionally strengthened by the 73rd Constitutional Amendment).",
+  "article 41": "Right to work, to education, and to public assistance in certain cases: State shall within its economic capacity provide for the right to work, education, and assistance in cases of unemployment, old age, sickness, and disablement (Socialistic Principle)",
+  "article 42": "Provision for just and humane conditions of work and maternity relief: State shall make provisions for securing humane work environments and providing for maternity benefits for women workers",
+  "article 43": "Living wage, etc., for workers: State shall strive to secure a living wage, conditions of work ensuring a decent standard of life, and full enjoyment of leisure and social/cultural opportunities, Includes promotion of cottage industries in rural areas (Gandhian Principle)",
+  "article 43A": "Participation of workers in management of industries: State shall take steps to secure the participation of workers in the management of undertakings/establishments engaged in any industry, Added by the 42nd Amendment Act 1976",
+  "article 43B": "Promotion of co-operative societies: State shall strive to promote voluntary formation, autonomous functioning, democratic control, and professional management of co-operative societies, Added by the 97th Amendment Act 2011",
+  "article 44": "Uniform Civil Code for the citizens: State shall endeavor to secure for the citizens a Uniform Civil Code throughout the territory of India (Liberal-Intellectual Principle)",
+  "article 45": "Provision for early childhood care and education to children below the age of six years: Substituted by the 86th Amendment Act 2002 (Previously covered ages 6-14 which moved to Fundamental Rights under Art 21A)",
+  "article 46": "Promotion of educational and economic interests of Scheduled Castes, Scheduled Tribes, and other weaker sections: State shall protect them from social injustice and all forms of exploitation",
+  "article 47": "Duty of the State to raise the level of nutrition and the standard of living and to improve public health: Includes the endeavor to bring about prohibition of the consumption of intoxicating drinks and drugs which are injurious to health (except for medicinal purposes)",
+  "article 48": "Organisation of agriculture and animal husbandry: State shall organize these on modern and scientific lines and, in particular, take steps for preserving/improving breeds and prohibiting the slaughter of cows, calves, and other milch/draught cattle",
+  "article 48A": "Protection and improvement of environment and safeguarding of forests and wild life: Added by the 42nd Amendment Act 1976, Mandates the State to protect and improve the natural environment",
+  "article 49": "Protection of monuments and places and objects of national importance: State is obligated to protect every monument or place of artistic or historic interest declared by Parliament to be of national importance from spoliation/destruction/removal",
+  "article 50": "Separation of judiciary from executive: State shall take steps to separate the judiciary from the executive in the public services of the State to ensure judicial independence",
+  "article 51": "Promotion of international peace and security: State shall strive to (a) promote international peace/security, (b) maintain just and honourable relations between nations, (c) foster respect for international law and treaty obligations, (d) encourage settlement of international disputes by arbitration",
+  "article 51A": "Fundamental Duties: Originally 10 duties added by 42nd Amendment 1976 (Swaran Singh Committee), 11th duty (education for 6-14 years) added by 86th Amendment 2002, Duties are non-justiciable but enforceable by law through specific statutes",
+  "article 52": "The President of India: mandatory constitutional office ('There shall be a President of India'); the Union executive cannot exist without this office.",
+  "article 53": "Executive power of the Union is vested in the President and exercised either directly or through officers subordinate to him in accordance with the Constitution; Supreme Command of the Defence Forces is also vested in the President, but its exercise is regulated by law (civilian/parliamentary control).",
+  "article 54": "Election of President: by an Electoral College consisting of (i) elected members of both Houses of Parliament, (ii) elected members of Legislative Assemblies of States, and (iii) elected members of Legislative Assemblies of NCT Delhi and Puducherry (70th Amendment). Nominated MPs/MLAs and members of State Legislative Councils are excluded.",
+  "article 55": "Manner of election: proportional representation by means of single transferable vote (STV) and secret ballot. It seeks uniformity among States and parity between Union and States via vote-value formula: MLA vote value depends on State population and elected Assembly strength; MP vote value is derived from total MLA vote value divided by total elected MPs of both Houses. For this calculation, population is based on the 1971 Census until figures of the first Census after 2026 are published.",
+  "article 56": "Term of office: 5 years from date of entering office; resignation is addressed to the Vice-President (who must communicate it to the Speaker of Lok Sabha); removal only by impeachment under Article 61; President continues in office beyond term until successor enters upon office.",
+  "article 57": "Eligibility for re-election: a person who has held office as President is eligible for re-election; no constitutional term limit on number of times.",
+  "article 58": "Qualifications for election as President: (1) citizen of India, (2) completed 35 years of age, (3) qualified for election as a member of Lok Sabha, (4) does not hold any office of profit under Union/State government or local/other authority under their control. Exception: sitting President, Vice-President, Governor, and Union/State Ministers are not deemed office-of-profit holders for this purpose.",
+  "article 59": "Conditions of office: President shall not be a member of either House of Parliament or of a State Legislature (seat deemed vacated on entering office); shall not hold any other office of profit; is entitled without payment of rent to official residences and to emoluments/allowances/privileges as determined by Parliament (or, until so determined, as in Second Schedule); emoluments and allowances cannot be diminished during term.",
+  "article 60": "Oath or affirmation of President: administered by the Chief Justice of India (or in his absence the senior-most available Supreme Court judge); President swears to faithfully execute office and to preserve, protect and defend the Constitution and the law, and devote himself to service and well-being of the people of India.",
+  "article 61": "Impeachment of President: only ground is 'violation of the Constitution' (undefined). Charge can originate in either House after at least 14 days' written notice signed by at least one-fourth of the total membership of that House; the initiating House must pass the resolution by a majority of not less than two-thirds of total membership; the other House investigates (or causes investigation), the President has right to appear and be represented; removal occurs only if the second House also passes by two-thirds of total membership.",
+  "article 62": "Time of election of President: election to fill vacancy caused by expiry of term must be completed before term ends; election for vacancy by death/resignation/removal/other cause must be held within 6 months; person elected in a casual vacancy holds office for a full 5-year term from date of entering office (not merely remainder).",
+  "article 63": "There shall be a Vice-President of India: mandatory constitutional office, who ranks next after the President in the Union executive order of precedence.",
+  "article 64": "Vice-President is ex officio Chairman of Rajya Sabha and cannot hold any other office of profit; during period when he acts as President (Art 65), he does not perform duties of Chairman and is not entitled to Chairman's salary/allowances for that period.",
+  "article 65": "Vice-President acts as President on occurrence of vacancy in office of President (death/resignation/removal/otherwise) until new President enters office, and discharges President's functions when President is unable to do so (absence/illness/other cause); while so acting/discharging, he has all powers, immunities and emoluments of President.",
+  "article 66": "Election of Vice-President: by members of an Electoral College consisting of members of both Houses of Parliament (elected and nominated, both included); State Legislatures have no role. Election method is proportional representation by means of single transferable vote and secret ballot. Qualification link: person must be qualified for election as a member of Rajya Sabha; office-of-profit bar applies with constitutional exceptions.",
+  "article 67": "Term/removal/resignation of Vice-President: term is 5 years from entering office; resignation is addressed to the President. Removal is by Rajya Sabha resolution passed by majority of all the then members (effective majority) and agreed to by Lok Sabha; at least 14 days' notice is mandatory; Constitution does not specify grounds for removal.",
+  "article 68": "Time of election for Vice-President vacancy: election to fill vacancy from expiry of term must be completed before expiry; election for casual vacancy (death/resignation/removal/otherwise) shall be held as soon as possible; person elected to casual vacancy is entitled to full 5-year term from date of entering office.",
+  "article 69": "Oath or affirmation of Vice-President: before entering office, oath in Third Schedule form is made before the President or a person appointed by him; wording centers on true faith and allegiance to the Constitution and faithful discharge of duty.",
+  "article 70": "Discharge of President's functions in other contingencies: Parliament may make provision for situations not otherwise provided in Chapter I, Part V (for example, statutory arrangement under the President (Discharge of Functions) Act, 1969 when both President and Vice-President offices/functions are unavailable).",
+  "article 71": "Matters relating to election of President/Vice-President: all doubts and disputes are inquired into and decided only by the Supreme Court, whose decision is final; if election is declared void, acts done before that decision remain valid; Parliament may regulate connected matters by law (e.g., Presidential and Vice-Presidential Elections Act, 1952), and election cannot be questioned merely due to a vacancy in the electoral college.",
+  "article 72": "President's pardoning power: can grant pardon, reprieve, respite, remission, or commutation in (i) all cases where punishment/sentence is by Court Martial, (ii) all cases where offence is against a law on a matter to which Union executive power extends, and (iii) all death-sentence cases. UPSC trap: President can pardon death sentence and Court Martial cases; power is exercised on aid and advice of Council of Ministers.",
+  "article 73": "Extent of Union executive power: extends to matters on which Parliament has power to make laws and to exercise rights/authority/jurisdiction exercisable by Government of India by treaty or agreement; proviso for Concurrent List matters - Union executive power does not, save as expressly provided in Constitution or by Parliamentary law, extend in a State to matters where State Legislature also has power.",
+  "article 74": "Council of Ministers to aid and advise President: there shall be a CoM with Prime Minister at the head; President shall act in accordance with such advice (42nd Amendment), but may once require reconsideration; after reconsideration, President is bound by that advice (44th Amendment). Clause (2): courts cannot inquire into what advice was tendered by Ministers to President.",
+  "article 75": "Other provisions on Union Ministers: Prime Minister appointed by President, other Ministers appointed by President on PM's advice; Ministers hold office during pleasure of President; CoM is collectively responsible to Lok Sabha; Minister must take oath of office and secrecy before entering office (Third Schedule); non-member can be Minister only for 6 consecutive months; salaries/allowances as Parliament determines. 91st Amendment: total number of Ministers including PM cannot exceed 15% of Lok Sabha strength, and a member disqualified under Tenth Schedule is also disqualified from being appointed as Minister during the disqualification period.",
+  "article 76": "Attorney-General for India: appointed by President and must be qualified to be a Supreme Court judge; duty is to advise Government of India on legal matters and perform legal duties assigned by President, and to discharge constitutional/legal functions; has right of audience in all courts in India; holds office during President's pleasure and receives remuneration as determined by President.",
+  "article 77": "Conduct of business of Government of India: all executive action must be expressed in the name of the President; orders/instruments are authenticated in the prescribed manner and validity cannot be questioned for non-execution by President personally; President makes rules for convenient transaction of business and allocation among Ministers (Transaction/Allocation of Business Rules).",
+  "article 78": "Duties of Prime Minister toward President: (a) communicate to President all decisions of CoM relating to administration and legislative proposals, (b) furnish information as President may call for, (c) submit for CoM consideration any matter decided by a Minister but not considered by CoM, when President so requires.",
+  "article 79": "Constitution of Parliament: Parliament of the Union consists of the President and two Houses - Council of States (Rajya Sabha) and House of the People (Lok Sabha).",
+  "article 80": "Composition of Rajya Sabha (Council of States): maximum strength 250, comprising 12 members nominated by President for special knowledge/practical experience in literature, science, art and social service, and not more than 238 representatives of States and Union Territories; representatives of States are elected by elected MLAs through proportional representation by single transferable vote, while UT representation is as Parliament prescribes by law; seat allocation is in the Fourth Schedule.",
+  "article 81": "Composition of Lok Sabha (House of the People): not more than 530 members chosen by direct election from territorial constituencies in States and not more than 20 to represent Union Territories (total ceiling 550 under this Article). Seats are allocated so that the population-to-seat ratio is, as far as practicable, uniform across States and constituencies within a State. Anglo-Indian nomination to Lok Sabha has been omitted by the 104th Amendment (2019).",
+  "article 82": "Readjustment after each Census: after every Census completion, allocation of seats to States in Lok Sabha and division of each State into territorial constituencies shall be readjusted by authority and in manner provided by Parliamentary law (Delimitation framework). Such readjustment takes effect from date specified by President and does not affect representation in existing Lok Sabha until dissolution. Freeze nuance: seat readjustment is deferred until the first Census after 2026 (as per amendment scheme).",
+  "article 83": "Duration of Houses of Parliament: Rajya Sabha is a permanent body and not subject to dissolution; as nearly as possible, one-third members retire every second year. Lok Sabha continues for 5 years from date appointed for first meeting unless dissolved sooner. During National Emergency, Parliament may extend Lok Sabha by law for one year at a time, but not beyond 6 months after Emergency ceases.",
+  "article 84": "Qualification for membership of Parliament: person must be citizen of India, make/subcribe oath or affirmation in Third Schedule form before person authorized by Election Commission, be at least 30 years for Rajya Sabha and 25 years for Lok Sabha, and possess additional qualifications prescribed by Parliament (primarily Representation of the People Act).",
+  "article 85": "Sessions/prorogation/dissolution: President summons each House at such time and place as he thinks fit, but 6 months shall not intervene between the last sitting of one session and first sitting of next session; President may prorogue either House and dissolve Lok Sabha. Adjournment is by presiding officer (not President). Bills do not lapse on prorogation; dissolution affects pending business in Lok Sabha as per constitutional rules.",
+  "article 86": "Right of President to address and send messages: President may address either House or both Houses assembled together and may require attendance of members for that purpose; President may also send messages to either House regarding a Bill pending or otherwise, and the House shall consider such message with all convenient dispatch.",
+  "article 87": "Special Address by President: at commencement of first session after each general election to Lok Sabha and at commencement of first session each year, President addresses both Houses assembled together and informs Parliament of causes of summons. Each House discusses matters referred in the Address (Motion of Thanks convention).",
+  "article 88": "Rights of Ministers and Attorney-General in Parliament: every Minister and the Attorney-General have right to speak and otherwise take part in proceedings of either House, joint sitting, and any committee of Parliament of which they may be named a member; however, they have no right to vote unless they are members of that House.",
+  "article 89": "Chairman and Deputy Chairman of Rajya Sabha: Vice-President of India is ex officio Chairman of the Council of States; Rajya Sabha shall, as soon as may be, choose one of its members to be Deputy Chairman (and when office is vacant, choose another member).",
+  "article 90": "Vacation/resignation/removal of Deputy Chairman: Deputy Chairman vacates office if he ceases to be a Rajya Sabha member; may resign by writing under hand addressed to Chairman; may be removed by a resolution of Rajya Sabha passed by a majority of all the then members, provided at least 14 days' notice of intention to move the resolution is given.",
+  "article 91": "Power of Deputy Chairman or other person to perform duties of Chairman (Rajya Sabha): when office of Chairman is vacant, or Vice-President is acting/discharging President's functions, Deputy Chairman performs Chairman's duties; if Deputy Chairman office is also vacant, President may appoint a Rajya Sabha member to perform duties. During absence of Chairman and Deputy Chairman from a sitting, person determined by rules (or by House) presides.",
+  "article 92": "Chairman/Deputy Chairman not to preside while removal resolution is under consideration: the concerned presiding officer cannot chair that sitting even if present. Chairman has right to speak and participate on his own removal resolution but cannot vote at all (despite Article 100). Deputy Chairman on his own removal can speak/participate and vote in first instance as member, but no casting vote (since he is not presiding).",
+  "article 93": "Speaker and Deputy Speaker of Lok Sabha: House of the People shall, as soon as may be, choose two members as Speaker and Deputy Speaker; when either office becomes vacant, the House shall choose another member.",
+  "article 94": "Vacation/resignation/removal of Speaker or Deputy Speaker: office vacates if the person ceases to be a Lok Sabha member; Speaker may resign to Deputy Speaker and Deputy Speaker may resign to Speaker; removal is by Lok Sabha resolution passed by majority of all the then members with at least 14 days' notice. Proviso trap: on dissolution of Lok Sabha, only the Speaker continues until immediately before first meeting of the new Lok Sabha.",
+  "article 95": "Power of Deputy Speaker or other person to perform duties of Speaker: when Speaker's office is vacant, Deputy Speaker acts as Speaker; if Deputy Speaker office is also vacant, President appoints a Lok Sabha member for duties of Speaker. During absence of Speaker and Deputy Speaker from a sitting, person determined by rules (or by House) presides; person so presiding has powers of Speaker for that sitting.",
+  "article 96": "Speaker/Deputy Speaker not to preside during consideration of removal resolution against them. Speaker has right to speak and participate during his own removal proceedings and, notwithstanding Article 100, may vote only in first instance (no casting vote). For Deputy Speaker's removal proceedings, he cannot preside and votes only as ordinary member, not as casting authority.",
+  "article 97": "Salaries and allowances of Chairman/Deputy Chairman (Rajya Sabha) and Speaker/Deputy Speaker (Lok Sabha) are as determined by Parliament by law and, until then, as in Second Schedule; these are charged on the Consolidated Fund of India (non-votable expenditure).",
+  "article 98": "Parliament Secretariat: each House has separate secretarial staff; Parliament may by law regulate recruitment and service conditions. Until such law, President may make rules after consulting Chairman/Speaker; provisions may allow creation of posts common to both Houses.",
+  "article 99": "Oath or affirmation by members: every member of either House must, before taking seat, make/subcribe oath or affirmation in Third Schedule form before President or person appointed by him; without oath, member cannot sit or vote.",
+  "article 100": "Voting in Houses and joint sittings: all questions are decided by majority of members present and voting, subject to Constitution. Speaker/Chairman/person acting as such does not vote in first instance but has casting vote in case of tie. Quorum is one-tenth of total membership of the House; if quorum lacking, presiding officer must adjourn or suspend until quorum is met. House can act notwithstanding vacancies, and proceedings remain valid even if later found that an unauthorized person sat/voted/participated.",
+  "article 101": "Vacation of seats: no person can be member of both Houses of Parliament simultaneously, or of Parliament and a State Legislature simultaneously (vacancy handled per Parliamentary law). If member is absent from all meetings of a House for 60 days without permission, the House may declare the seat vacant; while counting 60 days, periods when House is prorogued or adjourned for more than 4 consecutive days are excluded. Resignation of seat is effective only if accepted by Speaker/Chairman as voluntary and genuine.",
+  "article 102": "Disqualifications for MP: (a) office of profit under Government of India/State (except offices declared by Parliament not to disqualify), (b) unsound mind declared by a competent court, (c) undischarged insolvent, (d) not a citizen of India or voluntary acquisition/allegiance to a foreign State, (e) disqualification under any law made by Parliament (notably Representation of the People Act). Clause (2): disqualification also applies under Tenth Schedule (anti-defection).",
+  "article 103": "Decision on disqualification questions under Article 102(1): question is decided by President, who must obtain and act according to Election Commission's opinion; this does not apply to Tenth Schedule defection cases (decided by Speaker/Chairman). Constitutional text treats President's decision as final, though courts retain limited judicial review on constitutional grounds.",
+  "article 104": "Penalty for sitting/voting when disqualified or before oath: person who knowingly sits or votes without taking oath under Article 99, or when disqualified/prohibited by law, is liable to penalty of Rs. 500 for each day, recoverable as debt due to the Union.",
+  "article 105": "Parliamentary powers, privileges and immunities: subject to Constitution and parliamentary rules/standing orders, there is freedom of speech in Parliament; no member is liable in court for anything said or vote given in Parliament/committee, and no liability for authorized publication of reports/papers/proceedings by or under authority of either House. Other privileges are as defined by Parliament by law; until so defined, as those of each House and members/committees existing immediately before Section 15 of the 44th Amendment came into force (20 June 1979).",
+  "article 106": "Salaries and allowances of members: MPs receive salaries/allowances as Parliament may determine by law and, until provision is made, as specified in Second Schedule.",
+  "article 107": "Legislative procedure for ordinary Bills (subject to Articles 109 and 117): Bill may originate in either House; pending Bill does not lapse by prorogation. On dissolution of Lok Sabha: Bill pending in Rajya Sabha (not passed by Lok Sabha) does not lapse; Bill pending in Lok Sabha, or passed by Lok Sabha and pending in Rajya Sabha, lapses.",
+  "article 108": "Joint sitting of both Houses (not for Money Bills or Constitutional Amendment Bills): President may notify intention to summon joint sitting if one House rejects a Bill, Houses finally disagree on amendments, or more than 6 months elapse from receipt by other House without passage (excluding periods of prorogation or adjournment of more than 4 consecutive days). If Lok Sabha dissolves after such notification, joint sitting can still be held. Bill passes by majority of members present and voting at joint sitting; admissible amendments are restricted by constitutional rules. Presiding order: Speaker, then Deputy Speaker, then Deputy Chairman.",
+  "article 109": "Special procedure for Money Bills: Money Bill can be introduced only in Lok Sabha. After Lok Sabha passes and transmits it, Rajya Sabha has 14 days to return with recommendations; Lok Sabha may accept or reject any/all recommendations. If Rajya Sabha does not return within 14 days, Bill is deemed passed in form passed by Lok Sabha. Rajya Sabha cannot amend or reject a Money Bill.",
+  "article 110": "Definition of Money Bill: Bill is Money Bill only if it contains ONLY provisions dealing with matters in Article 110(1)(a)-(g) (taxation, Union borrowing/guarantees, Consolidated Fund/Contingency Fund custody/appropriation/charged expenditure, public account, audit, and incidental matters). Bill is not Money Bill merely because it provides fines/fees or local taxation. If question arises whether Bill is Money Bill, Speaker's decision is final under constitutional text; certificate must be endorsed when transmitted to Rajya Sabha and when presented to President for assent.",
+  "article 111": "Assent to Bills: when a Bill is presented, President may assent or withhold assent; for a Bill other than a Money Bill, President may return it with message for reconsideration. If both Houses pass again (with or without amendments), President shall not withhold assent. Money Bills cannot be returned for reconsideration. Constitutional Amendment Bills require mandatory assent under Article 368 (post-24th Amendment).",
+  "article 112": "Annual Financial Statement (Union Budget): President causes to be laid before both Houses a statement of estimated receipts/expenditure of Government of India for the financial year, showing separately expenditure charged on Consolidated Fund of India and other expenditure to be voted by Lok Sabha, and distinguishing revenue and capital accounts.",
+  "article 113": "Procedure in Parliament for estimates: expenditure charged on Consolidated Fund is not submitted to vote (though discussable); other expenditure is submitted as Demands for Grants to Lok Sabha. Lok Sabha may assent, refuse, or reduce a demand, but cannot increase it. No demand for grant can be made except on President's recommendation.",
+  "article 114": "Appropriation Bills: after Demands for Grants are voted, an Appropriation Bill is introduced to authorize withdrawal from Consolidated Fund for voted grants and charged expenditure. No amendment can vary amount/destination of any grant or charged expenditure; decision of presiding officer on admissibility is final.",
+  "article 115": "Supplementary, additional and excess grants: if amount in Article 112 is insufficient, or need arises for new service not included in that statement, or excess expenditure has occurred for any service, President causes another statement to be laid and procedures of Articles 112-114 apply accordingly (excess grants processed after audit/PAC scrutiny by convention).",
+  "article 116": "Vote on account, vote of credit and exceptional grants: Lok Sabha may make advance grant pending full budget (vote on account), grant for unexpected demand of indefinite character (vote of credit), or exceptional grant for special purpose not part of current service; these are authorized through law and governed procedurally like ordinary grants.",
+  "article 117": "Special provisions as to Financial Bills: Financial Bill Category A (contains Article 110 matters plus other matters) can be introduced only in Lok Sabha and only on President's recommendation. Financial Bill Category B (involves expenditure from Consolidated Fund but no Article 110 matter) may be introduced in either House, but cannot be passed by either House unless President has recommended consideration.",
+  "article 118": "Rules of procedure: each House may make rules for conduct of business (subject to Constitution). Until so made, pre-Constitution legislative rules continue with modifications. President, after consulting Speaker and Chairman, may make rules for joint sittings under Article 108.",
+  "article 119": "Regulation by law of parliamentary financial procedure: Parliament may by law regulate procedure and conduct of financial business in each House; if such law conflicts with rules made by House under Article 118, the law prevails.",
+  "article 120": "Language in Parliament: business shall be transacted in Hindi or English; with permission of presiding officer, a member unable to adequately express in Hindi/English may address House in mother tongue. Constitutional provision originally linked English continuation to transition period, but continuation is provided by statutory law (Official Languages Act framework).",
+  "article 121": "Restriction on discussion in Parliament: no discussion shall take place regarding conduct of any Supreme Court or High Court judge in discharge of duties, except upon a motion for presenting an address to President for removal of that judge.",
+  "article 122": "Courts not to inquire into parliamentary proceedings: validity of any parliamentary proceeding cannot be questioned in court on ground of alleged procedural irregularity; officers/members of Parliament exercising powers for regulating procedure, conduct of business, or maintaining order are not subject to court jurisdiction in respect of such exercise.",
+  "article 123": "Ordinance-making power of President: when both Houses are not in session and President is satisfied immediate action is necessary, he may promulgate an Ordinance having same force/effect as an Act of Parliament (subject to legislative competence and constitutional limits). Ordinance must be laid before both Houses and ceases at expiry of 6 weeks from reassembly of Parliament (counted from later date if Houses reassemble on different dates), or earlier on second disapproving resolution by both Houses; President may withdraw earlier. Re-promulgation to bypass Legislature is constitutionally impermissible (D.C. Wadhwa; Krishna Kumar Singh).",
+  "article 124": "Establishment and constitution of Supreme Court: consists of Chief Justice of India and other judges as Parliament may by law prescribe (current sanctioned strength under statute is 34 including CJI). Judges are appointed by President after consultation process laid down constitutionally/judicially (collegium convention in practice). Qualifications: citizen of India and either 5 years as High Court judge, or 10 years as High Court advocate, or distinguished jurist in President's opinion. Retirement age is 65 years. Removal only by President's order after address by each House in same session, supported by majority of total membership and not less than two-thirds of members present and voting, on ground of proved misbehaviour or incapacity. Resignation is by writing addressed to President.",
+  "article 124A": "Article 124A created the National Judicial Appointments Commission (NJAC) and provided its composition (CJI as Chairperson, two senior-most SC judges, Union Law Minister, and two eminent persons). The NJAC framework was declared unconstitutional by Supreme Court in 2015.",
+  "article 124B": "Article 124B provided functions of NJAC regarding recommendations for appointment and transfer of judges of Supreme Court and High Courts. The provision became inoperative after the 2015 Supreme Court judgment striking down NJAC scheme.",
+  "article 124C": "Article 124C empowered Parliament to make law regulating procedure for NJAC's functioning and related matters. This too became ineffective after NJAC was struck down in 2015.",
+  "article 125": "Salaries, allowances, leave and pension of Supreme Court judges are determined by Parliament by law and, until so provided, by Second Schedule; neither privileges nor rights regarding leave/pension, and no salary/allowance, can be varied to judge's disadvantage after appointment except under Financial Emergency (Article 360).",
+  "article 126": "Acting Chief Justice of India: when office of CJI is vacant or CJI is unable to perform duties, President appoints one of the Supreme Court judges to perform duties of the office.",
+  "article 127": "Ad hoc judges in Supreme Court: if at any time quorum of Supreme Court judges is unavailable, CJI may, with previous consent of President and after consultation with Chief Justice of concerned High Court, request a duly qualified High Court judge to sit as ad hoc Supreme Court judge; while so sitting, he has all jurisdiction, powers and privileges of a Supreme Court judge.",
+  "article 128": "Attendance of retired judges at Supreme Court sittings: CJI may, with previous consent of President, request a retired SC/Federal Court judge or retired High Court judge duly qualified for SC appointment to sit and act as judge of Supreme Court, with that person's consent; while so sitting, he has all jurisdiction, powers and privileges of a Supreme Court judge.",
+  "article 129": "Supreme Court as a Court of Record: it has power to preserve records with evidentiary authority and has power to punish for contempt of itself.",
+  "article 130": "Seat of Supreme Court: Supreme Court shall sit in Delhi or in such other place/place(s) as Chief Justice of India may, with approval of President, appoint.",
+  "article 131": "Original jurisdiction of Supreme Court (exclusive in specified federal disputes): applies to disputes involving Government of India and one or more States, or between States, where dispute involves existence/extent of a legal right. Proviso excludes disputes arising out of certain pre-Constitution treaties/agreements that continue in operation and provide such exclusion.",
+  "article 131A": "Exclusive jurisdiction of Supreme Court to determine constitutional validity of Central laws: repealed by the 43rd Amendment Act, 1977.",
+  "article 132": "Constitutional appellate jurisdiction: appeal lies to Supreme Court from any judgment/decree/final order of a High Court in civil, criminal or other proceeding if High Court certifies under Article 134A that case involves a substantial question of law as to interpretation of Constitution.",
+  "article 133": "Civil appellate jurisdiction: appeal lies from High Court judgment/decree/final order in civil proceeding if High Court certifies that case involves a substantial question of law of general importance and, in High Court's opinion, that question needs to be decided by Supreme Court.",
+  "article 134": "Criminal appellate jurisdiction: appeal to Supreme Court lies if High Court (a) on appeal reverses acquittal and sentences accused to death, or (b) withdraws a case from subordinate court for trial and in such trial sentences accused to death, or (c) certifies under Article 134A that case is fit for appeal to Supreme Court.",
+  "article 134A": "Certificate for appeal to Supreme Court: High Court must, after passing judgment/decree/final order/sentence referred to in Articles 132(1), 133(1) or 134(1), determine whether certificate should be granted (on its own motion or on oral application by aggrieved party).",
+  "article 135": "Jurisdiction and powers of Federal Court preserved residually: Supreme Court exercises such jurisdiction/powers as Federal Court had immediately before commencement of Constitution, insofar as not covered by Articles 133 or 134.",
+  "article 136": "Special Leave to Appeal (SLP): Supreme Court may, in its discretion, grant special leave against any judgment/decree/determination/sentence/order in any cause or matter passed by any court or tribunal in India; express exclusion applies to courts/tribunals constituted under laws relating to the Armed Forces.",
+  "article 137": "Review power of Supreme Court: subject to Parliamentary law and rules under Article 145, Supreme Court has power to review any judgment pronounced or order made by it.",
+  "article 138": "Enlargement of Supreme Court jurisdiction: Parliament may by law confer further jurisdiction/powers on Supreme Court regarding matters in Union List; additional jurisdiction on other matters may also be conferred where Union and a State(s) agree by special agreement and Parliament so provides by law.",
+  "article 139": "Conferment of additional writ powers: Parliament may by law empower Supreme Court to issue directions/orders/writs (including those in Article 32) for purposes other than enforcement of Fundamental Rights.",
+  "article 139A": "Transfer of certain cases: where same or substantially same question of law of general importance is pending before Supreme Court and one or more High Courts, Supreme Court may withdraw High Court case(s) and decide itself; Supreme Court may also transfer cases/appeals/proceedings from one High Court to another if expedient for ends of justice (on AGI application, party application, or suo motu).",
+  "article 140": "Ancillary powers of Supreme Court: Parliament may by law confer supplementary powers on Supreme Court as needed to enable it to perform functions effectively.",
+  "article 141": "Law declared by Supreme Court is binding on all courts within territory of India (doctrine of precedent). Binding part is ratio decidendi; obiter observations are persuasive. Supreme Court may depart from its own earlier view in appropriate cases (usually by larger bench).",
+  "article 142": "Enforcement and complete justice power: Supreme Court may pass any decree or order necessary for doing complete justice in any cause/matter before it; such decree/order is enforceable throughout India as prescribed by Parliamentary law or, until then, by Presidential order. Supreme Court may also secure attendance/discovery/punish contempt as provided.",
+  "article 143": "Advisory jurisdiction of Supreme Court: President may refer to Supreme Court a question of law or fact of public importance (Court may report opinion). In matters arising from disputes under pre-Constitution treaties/agreements covered by proviso, Court shall report opinion. Presidential reference opinion is advisory (not binding like a judgment in lis).",
+  "article 144": "All authorities, civil and judicial, in the territory of India shall act in aid of the Supreme Court (constitutional command ensuring compliance with SC process and judgments).",
+  "article 145": "Rules of Supreme Court: subject to Parliamentary law and Presidential approval, Supreme Court may make rules regulating practice/procedure, including persons who may practice before it and review procedure. Minimum five-judge Constitution Bench required for cases involving substantial question of constitutional interpretation or Article 143 reference.",
+  "article 146": "Officers and servants of Supreme Court: appointments made by CJI (or authorized judge/officer) subject to Parliamentary law; service conditions prescribed by rules made by CJI/authorized authority with Presidential approval where required. Administrative expenses of Supreme Court, including salaries/allowances/pensions, are charged on Consolidated Fund of India.",
+  "article 147": "Interpretation clause for this Chapter: references to substantial question of constitutional interpretation include references to interpretation of Government of India Act, 1935 and Indian Independence Act, 1947 and their ancillary instruments.",
+  "article 148": "Comptroller and Auditor-General of India: appointed by President by warrant under hand and seal. Removal only in like manner and on like grounds as Supreme Court judge. Oath as per Third Schedule. Conditions of service/salary determined by Parliament and not varied to disadvantage after appointment; post-retirement ineligible for further office under Government of India or State Government. Administrative expenses of CAG office are charged on Consolidated Fund of India.",
+  "article 149": "Duties and powers of CAG are prescribed by Parliamentary law (primarily CAG's DPC Act, 1971); core function is audit of Union and State accounts including expenditure from Consolidated Fund, Contingency Fund and Public Account, and reporting thereon.",
+  "article 150": "Form of accounts of Union and States shall be prescribed by President on advice of CAG, ensuring uniform and comparable government accounting framework.",
+  "article 151": "Audit reports: CAG submits Union reports to President for laying before both Houses of Parliament, and State reports to Governor for laying before State Legislature. These reports form basis for legislative financial control (PAC/COPU scrutiny by convention and rules).",
+  "article 152": "Definition clause for Part VI (The States): unless context otherwise requires, 'State' in this Part does not include Jammu and Kashmir; practical exam takeaway is that this Part governs constitutional structure of States.",
+  "article 153": "Governors of States: there shall be a Governor for each State; by proviso, the same person may be appointed as Governor for two or more States.",
+  "article 154": "Executive power of State is vested in Governor and exercised by him either directly or through officers subordinate to him in accordance with Constitution; this does not prevent conferral of functions by law on other authorities.",
+  "article 155": "Appointment of Governor: Governor of a State is appointed by President by warrant under his hand and seal (appointed, not elected).",
+  "article 156": "Term of Governor: holds office during pleasure of President; subject to this, normal term is 5 years from entering office. Governor may resign by writing to President and continues until successor enters office even after term expiry.",
+  "article 157": "Qualifications for Governor: must be citizen of India and have completed 35 years of age.",
+  "article 158": "Conditions of Governor's office: shall not be member of Parliament or State Legislature (seat deemed vacated on entering office), shall not hold any other office of profit, entitled to official residence and emoluments/allowances/privileges as determined by Parliament (or Second Schedule until then), and emoluments/allowances cannot be diminished during term; where one person is Governor of 2+ States, allocation is by President's order.",
+  "article 159": "Oath/affirmation of Governor: before entering office, oath is administered by Chief Justice of High Court (or senior-most available judge), including pledge to preserve, protect and defend Constitution and law and devote self to service and well-being of people.",
+  "article 160": "Discharge of Governor's functions in contingencies: President may make such provision as he thinks fit for any contingency not provided for in this Chapter.",
+  "article 161": "Governor's clemency power: may grant pardons/reprieves/respites/remissions or suspend/remit/commute sentence for offences against laws on matters to which State executive power extends. Constitutional distinction from Article 72: Governor has no independent Court-Martial category and no separate all-death-sentence clause like the President.",
+  "article 162": "Extent of State executive power: extends to matters on which State Legislature can make laws. In Concurrent List matters, State executive power is subject to and limited by executive power expressly conferred by Constitution or by Parliamentary law on Union or its authorities.",
+  "article 163": "Council of Ministers to aid and advise Governor: Governor acts on aid and advice of CoM headed by Chief Minister except in matters where Constitution requires discretion. Constitutional text says Governor's decision on whether a matter is discretionary is final and advice is non-justiciable in court; modern judicial practice still permits limited review on constitutional grounds.",
+  "article 164": "State ministers: Chief Minister appointed by Governor; other ministers appointed by Governor on CM's advice; CoM collectively responsible to Legislative Assembly. Ministers hold office during pleasure of Governor and take oath of office/secrecy. 6-month rule: non-member minister must get elected/nominated within 6 months. 91st Amendment limits total ministers (including CM) to 15% of Assembly strength, minimum 12, and disqualified defector under Tenth Schedule cannot be appointed minister during disqualification period. Proviso requires a minister in charge of Tribal Welfare in specified States (also handling SC/BC welfare as applicable).",
+  "article 165": "Advocate-General for State: appointed by Governor; must be qualified for appointment as High Court judge; duty is to advise State Government on legal matters and perform legal functions assigned by Governor/Constitution; holds office during Governor's pleasure and is paid as Governor determines.",
+  "article 166": "Conduct of State government business: all executive action of State Government shall be expressed in name of Governor; orders/instruments are authenticated as specified in rules and validity cannot be questioned for non-execution by Governor personally; Governor makes rules for convenient transaction/allocation of business among ministers.",
+  "article 167": "Duties of Chief Minister toward Governor: communicate all CoM decisions relating to administration and legislative proposals; furnish information as Governor may call for; place before CoM any matter decided by a minister but not considered by CoM when Governor so requires.",
+  "article 168": "Constitution of State Legislatures: for every State, Legislature consists of Governor and one House (Legislative Assembly), and in some States also a second House (Legislative Council) where bicameral system exists under constitutional/parliamentary arrangement.",
+  "article 169": "Creation or abolition of State Legislative Council: Parliament may by law provide for abolition/creation of Council if Legislative Assembly of the concerned State passes a resolution by special majority (majority of total membership + not less than two-thirds of members present and voting). Such law is expressly not treated as a constitutional amendment under Article 368.",
+  "article 170": "Composition of Legislative Assemblies: Assembly membership is not more than 500 and not less than 60, subject to specific constitutional/statutory exceptions for smaller States. Seats are filled by direct election from territorial constituencies with population-seat parity principle as far as practicable; readjustment linked to census is constitutionally deferred until first census after 2026 under amendment scheme.",
+  "article 171": "Composition of Legislative Councils: total membership not more than one-third of Assembly strength and not less than 40 (subject to specific exceptions). As nearly as may be: one-third elected by local authorities, one-twelfth by graduates (of at least 3 years standing), one-twelfth by teachers (not lower than secondary level, of at least 3 years standing), one-third by Assembly members, and remainder nominated by Governor from persons with special knowledge/practical experience in literature, science, art, cooperative movement and social service.",
+  "article 172": "Duration of State Legislatures: Legislative Assembly normally continues for 5 years from date appointed for first meeting unless dissolved sooner; during National Emergency, Parliament may by law extend Assembly term by one year at a time, but not beyond six months after Emergency ceases. Legislative Council is a permanent House; as nearly as possible, one-third members retire every second year.",
+  "article 173": "Qualification for State Legislature membership: person must be citizen of India, make/subcribe oath or affirmation in Third Schedule form before person authorized by Election Commission, be at least 25 years for Assembly and 30 years for Council, and satisfy further qualifications prescribed by/under Parliamentary law.",
+  "article 174": "Sessions/prorogation/dissolution in State Legislature: Governor summons House/each House at such time and place as he thinks fit, but six months shall not intervene between last sitting in one session and first sitting in next session; Governor may prorogue House/each House and dissolve Legislative Assembly.",
+  "article 175": "Right of Governor to address and send messages: Governor may address Legislative Assembly or both Houses (where bicameral) and may require attendance for that purpose; Governor may send messages to House/Houses regarding pending Bill or otherwise, and House shall consider with all convenient dispatch.",
+  "article 176": "Special Address by Governor: at commencement of first session after each general election to Assembly and at commencement of first session each year, Governor addresses Assembly or both Houses together and informs Legislature of causes of summons; House(s) discuss matters referred (Motion of Thanks convention).",
+  "article 177": "Rights of Ministers and Advocate-General in State Legislature: every minister and Advocate-General has right to speak and otherwise take part in proceedings of Assembly/Council and any committee of Legislature of which he may be named member, but has no right to vote unless he is member of that House.",
+  "article 178": "Speaker and Deputy Speaker of Legislative Assembly: Assembly shall, as soon as may be, choose two members as Speaker and Deputy Speaker; when either office becomes vacant, Assembly chooses another member.",
+  "article 179": "Vacation/resignation/removal of Speaker or Deputy Speaker (Assembly): office vacates if person ceases to be Assembly member; Speaker may resign to Deputy Speaker and Deputy Speaker to Speaker; removal is by Assembly resolution passed by majority of all the then members with at least 14 days' notice. Proviso: Speaker does not vacate office on Assembly dissolution until immediately before first meeting of new Assembly.",
+  "article 180": "Power of Deputy Speaker or other person to perform Speaker's duties: when Speaker's office is vacant, Deputy Speaker performs duties; if Deputy Speaker office also vacant, Governor appoints an Assembly member to perform duties. During absence of Speaker and Deputy Speaker from sitting, person determined by Assembly rules (or by Assembly) presides.",
+  "article 181": "Speaker/Deputy Speaker not to preside during consideration of resolution for his removal: the concerned officer cannot preside though present; Speaker has right to speak/participate and may vote only in first instance (no casting vote) on his own removal resolution; same rule applies mutatis mutandis to Deputy Speaker.",
+  "article 182": "Chairman and Deputy Chairman of Legislative Council: Council shall, as soon as may be, choose two members as Chairman and Deputy Chairman; when either office becomes vacant, Council shall choose another member.",
+  "article 183": "Vacation/resignation/removal of Chairman or Deputy Chairman (Council): office vacates if person ceases to be Council member; Chairman may resign to Deputy Chairman and Deputy Chairman to Chairman; removal is by Council resolution passed by majority of all the then members, with at least 14 days' notice of intention to move the resolution.",
+  "article 184": "Power of Deputy Chairman or other person to perform duties of Chairman: when Chairman's office is vacant, Deputy Chairman performs duties, and if Deputy Chairman office is also vacant, Governor may appoint a Council member to perform duties; during absence of Chairman and Deputy Chairman from a sitting, person determined by Council rules (or by Council) presides.",
+  "article 185": "Chairman/Deputy Chairman not to preside while removal resolution is under consideration against them: they may be present, speak and otherwise take part in proceedings; on such proceedings they may vote only in first instance and are not entitled to casting vote under Article 189.",
+  "article 186": "Salaries and allowances of Speaker/Deputy Speaker (Assembly) and Chairman/Deputy Chairman (Council) are as determined by State Legislature by law and, until then, as specified in Second Schedule.",
+  "article 187": "Secretariat of State Legislature: each House has separate secretarial staff; State Legislature may by law regulate recruitment and service conditions. Until such law, Governor may make rules after consultation with Speaker/Chairman; provision may be made for posts common to both Houses.",
+  "article 188": "Oath or affirmation by members: every member of State Legislature must, before taking seat, make/subcribe oath or affirmation in Third Schedule form before Governor or person appointed by him.",
+  "article 189": "Voting in Houses: questions are decided by majority of members present and voting; Speaker/Chairman (or person acting) has casting vote in case of equality. House can act notwithstanding vacancies, and proceedings are not invalidated merely because some unauthorized person sat/voted/participated. Quorum is 10 members or one-tenth of total membership, whichever is greater.",
+  "article 190": "Vacation of seats: no person can be member of both Houses of State Legislature simultaneously (vacancy regulated by State law), or member of Legislatures of two or more States simultaneously (vacancy regulated by Parliamentary law). Seat becomes vacant on disqualification under Article 191, or on resignation accepted by Speaker/Chairman as voluntary and genuine. House may declare seat vacant for absence from all meetings for 60 days without permission (excluding prorogation and adjournment periods over 4 consecutive days).",
+  "article 191": "Disqualifications for State Legislature membership: (a) office of profit under Government of India/State (except offices exempted by State law), (b) unsound mind declared by competent court, (c) undischarged insolvent, (d) not citizen of India or voluntary acquisition/allegiance to foreign State, (e) disqualification by/under Parliamentary law. Clause (2): disqualification also under Tenth Schedule (anti-defection).",
+  "article 192": "Decision on questions of disqualification under Article 191(1): if question arises whether a sitting member has become disqualified, it is referred to Governor; Governor acts according to Election Commission's opinion. Decision is treated as final in constitutional text, subject to limited judicial review.",
+  "article 193": "Penalty for sitting and voting before oath or when disqualified: a person who knowingly sits or votes in State Legislature before making oath under Article 188, or while not qualified/disqualified/prohibited by law, is liable to penalty of Rs. 500 for each day, recoverable as debt due to the State.",
+  "article 194": "Powers, privileges and immunities of State Legislatures and members: subject to Constitution and House rules, there is freedom of speech in Legislature; no member is liable in court for speech/vote in Legislature or committee; no liability for authorized publication of reports/papers/proceedings. Other powers/privileges are as defined by State Legislature by law, and until so defined, as those existing immediately before Section 26 of the 44th Amendment came into force.",
+  "article 195": "Salaries and allowances of State Legislature members are determined by State Legislature by law and, until such provision is made, as specified in the Second Schedule.",
+  "article 196": "Provisions as to introduction and passing of Bills (other than Money Bills): Bill may originate in either House of a bicameral State and must be passed by both Houses (subject to Article 197). Bill pending in Legislature does not lapse by prorogation. On dissolution of Assembly: Bill pending in Council but not passed by Assembly does not lapse; Bill pending in Assembly, or passed by Assembly and pending in Council, lapses.",
+  "article 197": "Restriction on powers of Legislative Council as to Bills other than Money Bills: if Assembly Bill is rejected/delayed/amended unacceptably by Council, Assembly may pass it again (same session or next) and send to Council; if Council again rejects, delays beyond one month, or returns unacceptable amendments, Bill is deemed passed in form passed by Assembly second time (with only Assembly-accepted Council amendments, if any). No joint sitting mechanism exists at State level.",
+  "article 198": "Special procedure for Money Bills in States: Money Bill cannot be introduced in Legislative Council. After Assembly passes and transmits it, Council has 14 days to return with recommendations; Assembly may accept/reject recommendations. If Council does not return within 14 days, Bill is deemed passed in Assembly form.",
+  "article 199": "Definition of Money Bill (State analogue of Article 110): Bill is Money Bill only if it contains only provisions dealing with matters in clauses (a)-(g) such as State taxation, State borrowing/guarantees, custody/appropriation of Consolidated Fund or Contingency Fund of State, charged expenditure, public account, and incidental matters. Not Money Bill merely because of fines/fees/local taxation. Speaker's decision on Money Bill question is final in constitutional text; certificate is endorsed on Bill.",
+  "article 200": "Assent to Bills by Governor: when Bill is presented, Governor may assent, withhold assent, or reserve Bill for President's consideration. For a Bill other than Money Bill, Governor may return once with message for reconsideration; if House(s) pass it again with/without amendments and present again, Governor shall not withhold assent. Mandatory reservation trap: if, in Governor's opinion, Bill would so derogate from powers of High Court as to endanger its constitutional position, Governor shall reserve it for President.",
+  "article 201": "Bills reserved for President: President may assent or withhold assent; if reserved Bill is not Money Bill, President may direct Governor to return it to State Legislature with message. If reconsidered and passed again within six months (with/without amendments) and re-presented to President, President is not constitutionally bound to assent.",
+  "article 202": "Annual Financial Statement of State (State Budget): Governor causes to be laid before House/each House statement of estimated receipts and expenditure for financial year, distinguishing expenditure charged on Consolidated Fund of State from expenditure to be voted, and distinguishing revenue and other expenditure.",
+  "article 203": "Procedure in State Legislature with respect to estimates: charged expenditure on Consolidated Fund of State is not submitted to vote (though discussable); other expenditure is submitted as Demands for Grants to Assembly. Assembly may assent, refuse or reduce a demand, but cannot increase it. No demand for grant can be made except on Governor's recommendation.",
+  "article 204": "Appropriation Bills in States: after Demands for Grants are voted, Appropriation Bill is introduced to authorize withdrawal from Consolidated Fund of State for voted grants and charged expenditure. No amendment may vary amount/destination of any grant or charged expenditure; decision of presiding officer on admissibility is final.",
+  "article 205": "Supplementary, additional and excess grants in States: if budgeted amount is insufficient, a new service arises, or excess expenditure has occurred, Governor causes another statement/demand to be laid; constitutional procedure of budget and grants applies correspondingly.",
+  "article 206": "Votes on account, votes of credit and exceptional grants (States): Assembly may make advance grant pending full budget, grant for unexpected demand of indefinite character, or exceptional grant for special purpose not part of current service; implementation follows statutory appropriation process.",
+  "article 207": "Special provisions as to Financial Bills in States: Bill containing matters in Article 199(1) with other matters cannot be introduced except on Governor's recommendation and cannot originate in Council. Bill making provision for expenditure from Consolidated Fund of State cannot be passed unless Governor has recommended consideration; tax-reduction/amendment exceptions apply as constitutionally provided.",
+  "article 208": "Rules of procedure in State Legislature: each House may make rules for its procedure/conduct of business, subject to Constitution. Until such rules are made, pre-Constitution legislative procedure rules continue with adaptations as needed.",
+  "article 209": "Regulation by law of State Legislature financial procedure: State Legislature may by law regulate procedure and conduct of financial business in relation to timely completion; such law prevails over inconsistent House rules under Article 208.",
+  "article 210": "Language in State Legislature: business may be transacted in official language(s) of State, Hindi or English; presiding officer may permit a member unable to express adequately in these to speak in mother tongue. English continuation beyond transition period is governed by constitutional/statutory provisions.",
+  "article 211": "Restriction on discussion in State Legislature: conduct of any Supreme Court or High Court judge in discharge of duties shall not be discussed, except on motion for presenting address to President seeking removal of judge.",
+  "article 212": "Courts not to inquire into State legislative proceedings on ground of procedural irregularity; officers/members exercising powers for regulating procedure/conduct of business/maintaining order in Legislature are not subject to court jurisdiction for such exercise.",
+  "article 214": "High Courts for States: there shall be a High Court for each State, subject to Article 231 which allows a common High Court for two or more States/State and Union Territory.",
+  "article 215": "High Court to be a Court of Record: has power to preserve records with evidentiary authority and to punish for contempt of itself.",
+  "article 216": "Constitution of High Court: consists of Chief Justice and such other judges as President may from time to time deem necessary.",
+  "article 217": "Appointment and conditions of office of High Court judges: appointed by President by warrant under hand and seal after consultation with CJI, Governor of State, and (for judges other than Chief Justice) Chief Justice of that High Court. Qualifications: citizen of India and at least 10 years judicial office in India or 10 years advocate of High Court(s). Tenure is up to age 62; resignation to President; removal by process applicable to Supreme Court judges. Disputes on age are decided by President after prescribed consultation and decision is final in constitutional text.",
+  "article 218": "Application of certain Supreme Court provisions to High Courts: Article 124(4) and 124(5) (removal process and enabling law) apply to High Court judges.",
+  "article 219": "Oath or affirmation of High Court judges: before entering office, oath in Third Schedule form is made before Governor or person appointed by him (includes allegiance to Constitution and upholding sovereignty and integrity of India).",
+  "article 220": "Restriction on post-retirement practice: a permanent High Court judge cannot plead/act in any court or authority in India except the Supreme Court and other High Courts.",
+  "article 221": "Salaries and allowances of High Court judges are determined by Parliament by law and, until so provided, by Second Schedule; they cannot be varied to judge's disadvantage after appointment except under Financial Emergency. Salaries/allowances are charged on Consolidated Fund of the State; pension is charged on Consolidated Fund of India.",
+  "article 222": "Transfer of High Court judge: President may transfer a judge from one High Court to another after consultation with CJI; transferred judge is entitled to compensatory allowance as determined by Parliament by law (or by President until law provides).",
+  "article 223": "Appointment of Acting Chief Justice: when office of Chief Justice of High Court is vacant, or CJ is absent/unable to perform duties, President may appoint one of other judges of that High Court to perform duties of office.",
+  "article 224": "Appointment of additional and acting High Court judges: President may appoint duly qualified persons as additional judges for period not exceeding two years when temporary increase in business or arrears exists; President may appoint an acting judge when a High Court judge (other than Chief Justice) is unable to perform duties or is appointed to act temporarily as Chief Justice. Retirement age remains 62 years.",
+  "article 224A": "Appointment of retired judges at sittings of High Court: Chief Justice of High Court, with previous consent of President, may request a retired High Court judge (or person who has held such office) to sit and act as judge; consent of the retired judge is mandatory. While so sitting, he has all jurisdiction, powers and privileges of a High Court judge.",
+  "article 225": "Jurisdiction of existing High Courts preserved subject to Constitution and laws made by competent legislature: includes jurisdiction/powers and law administered, along with power to make court rules and regulate sittings. Existing restrictions relating to revenue matters continue unless altered by competent law.",
+  "article 226": "Power of High Courts to issue writs/directions/orders: includes habeas corpus, mandamus, prohibition, certiorari and quo warranto for enforcement of Fundamental Rights and for any other purpose (wider than Article 32). Territorial reach includes cases where cause of action arises wholly or partly within its territory even if authority/government seat is outside; this power is in addition to, not in derogation of, Supreme Court power under Article 32.",
+  "article 226A": "Constitutional validity of Central laws: Repealed by the 43rd Amendment Act 1977.",
+  "article 227": "Power of superintendence of High Courts: every High Court has superintendence over all courts and tribunals within its territory (except those constituted under laws relating to Armed Forces). It may call for returns, make/general issue rules and prescribe forms for regulating practice/proceedings of such courts/tribunals.",
+  "article 228": "Transfer of certain cases to High Court: if a case pending in subordinate court involves substantial question of constitutional interpretation and determination of that question is necessary for disposal, High Court may withdraw the case and either dispose of it itself or decide constitutional question and return case to subordinate court with its judgment on that question.",
+  "article 229": "Officers and servants of High Court: appointments are made by Chief Justice (or authorized judge/officer), subject to Parliamentary/State law. Conditions of service are prescribed by rules of Chief Justice, with Governor's approval required on matters of salaries/allowances/leave/pensions as specified. Administrative expenses of High Court are charged on Consolidated Fund of the State.",
+  "article 230": "Parliament may by law extend jurisdiction of a High Court to, or exclude its jurisdiction from, a Union Territory.",
+  "article 231": "Parliament may by law establish a common High Court for two or more States, or for two or more States and a Union Territory.",
+  "article 232": "Article 232 (appointment of District Judges in certain cases) stood omitted by the Constitution (Seventh Amendment) Act, 1956.",
+  "article 233": "Appointment of district judges: appointments/postings/promotions in State judicial service of district judges are made by Governor in consultation with High Court. A person not already in Union/State service is eligible for appointment only if he has been for at least seven years an advocate or pleader and is recommended by High Court.",
+  "article 233A": "Validation of certain District Judges: Inserted by 20th Amendment 1966 to validate appointments and judgments that were found procedurally irregular regarding Articles 233 and 235.",
+  "article 234": "Recruitment of persons other than district judges to State judicial service: made by Governor in accordance with rules framed after consultation with State Public Service Commission and High Court having jurisdiction in relation to such State.",
+  "article 235": "Control over subordinate courts: posting, promotion and grant of leave of persons in judicial service of a State and holding posts inferior to district judge are vested in High Court; this secures independence of subordinate judiciary from executive control.",
+  "article 236": "Interpretation for this chapter: 'district judge' includes judge of city civil court, additional district judge, joint district judge, assistant district judge, chief judge of small cause court, chief presidency magistrate, additional chief presidency magistrate, sessions judge, additional sessions judge and assistant sessions judge; 'judicial service' means service consisting exclusively of persons intended to fill post of district judge and other civil judicial posts inferior thereto.",
+  "article 237": "Application of this chapter to certain classes of magistrates: Governor may, by public notification, direct that provisions of this chapter and rules made thereunder apply to any class/classes of magistrates in State with specified exceptions/modifications.",
+  "article 238": "Article 238 (application of Part VI provisions to certain States) stood repealed by the Constitution (Seventh Amendment) Act, 1956.",
+  "article 239": "Administration of Union Territories: every UT is administered by President acting through an Administrator appointed by him with such designation as specified. President may appoint Governor of a State as Administrator of adjoining UT, and in that capacity he acts independently of State Council of Ministers.",
+  "article 239A": "Creation of local Legislatures or Council of Ministers for certain UTs: Parliament may by law create Legislature and/or Council of Ministers (or both) for UT of Puducherry with specified constitution/powers/functions; such law is not deemed constitutional amendment under Article 368.",
+  "article 239AA": "Special provisions for National Capital Territory of Delhi: Delhi remains a UT called NCT of Delhi with a Legislative Assembly and a Council of Ministers (size capped at 10% of total Assembly membership) to aid and advise LG in matters where Assembly has law-making power. Assembly cannot legislate on State List Entries 1 (public order), 2 (police), 18 (land) and related Entries 64/65/66 insofar as they relate to these. On difference between LG and Ministers, LG may refer matter to President and act as constitutionally provided.",
+  "article 239AB": "Failure of constitutional machinery in NCT Delhi: if President is satisfied that administration of NCT cannot be carried on in accordance with Article 239AA or for proper administration, President may suspend operation of any provision of Article 239AA or laws made under it and make consequential/incidental provisions.",
+  "article 239B": "Ordinance-making power of Administrator (Puducherry framework): when Legislature is not in session, Administrator may promulgate Ordinance with prior instructions of President; Ordinance has same force as UT law but must be laid before Legislature and ceases six weeks after reassembly (or earlier on disapproval/withdrawal).",
+  "article 240": "Power of President to make regulations for certain UTs: President may make regulations for peace, progress and good government of Andaman & Nicobar Islands, Lakshadweep, Dadra & Nagar Haveli and Daman & Diu, and Puducherry (in specified constitutional situations). Such regulation may repeal/amend Parliamentary law or other applicable law for that UT and has same force as Act of Parliament.",
+  "article 241": "High Courts for Union Territories: Parliament may by law constitute a High Court for a UT or declare any court in a UT to be a High Court for all or any constitutional purposes; Parliament may also extend/exclude jurisdiction of a High Court to/from UTs by law.",
+  "article 242": "Article 242 (administration of Coorg) stood omitted by the Constitution (Seventh Amendment) Act, 1956.",
+  "article 244": "Administration of Scheduled Areas and Tribal Areas: provisions of Fifth Schedule apply to administration/control of Scheduled Areas and Scheduled Tribes in States other than Assam, Meghalaya, Tripura and Mizoram; provisions of Sixth Schedule apply to administration of tribal areas in Assam, Meghalaya, Tripura and Mizoram.",
+  "article 244A": "Formation of autonomous State within Assam: notwithstanding Constitution, Parliament may by law form within Assam an autonomous State comprising specified tribal areas in Sixth Schedule and create for it a local Legislature, Council of Ministers, or both, with powers/functions/financial arrangements defined by Parliamentary law.",
+  "article 245": "Extent of laws made by Parliament and State Legislatures: Parliament may make laws for whole or any part of India; State Legislature may make laws for whole or any part of the State. Parliamentary law is not invalid merely for extra-territorial operation; State law relies on territorial nexus doctrine for permissible extra-territorial connections.",
+  "article 246": "Subject-matter of laws (Seventh Schedule distribution): Parliament has exclusive power over Union List (List I); States have exclusive power over State List (List II), subject to constitutional exceptions; both can legislate on Concurrent List (List III), with Union primacy on conflict via Article 254.",
+  "article 246A": "Special provision on GST (inserted by 101st Amendment): notwithstanding Articles 246/254, Parliament and State Legislatures have concurrent power to make GST laws; Parliament has exclusive power for GST on inter-State supply (read with Article 269A).",
+  "article 247": "Power of Parliament to establish additional courts for better administration of laws made by Parliament on matters in Union List.",
+  "article 248": "Residuary legislative power: Parliament has exclusive power to legislate on matters not enumerated in Concurrent or State List, including residuary taxation.",
+  "article 249": "Parliament's power to legislate on State List in national interest: if Rajya Sabha passes resolution supported by not less than two-thirds of members present and voting, Parliament may legislate on specified State List matter for whole/part of India. Resolution lasts one year and may be renewed annually. Such law ceases six months after resolution ceases, except for past actions done under it.",
+  "article 250": "Parliament's power to legislate on State List during National Emergency: while Proclamation of Emergency is in operation, Parliament can legislate on State List for whole/part of India; such law ceases six months after Emergency ends, except for past actions done under it.",
+  "article 251": "Inconsistency between laws made under Articles 249/250 and State laws: parliamentary law prevails over State law to extent of repugnancy while parliamentary law is in force.",
+  "article 252": "Parliamentary legislation for two or more States by consent: if two or more State Legislatures pass resolutions that Parliament should legislate on a State List matter, Parliament may legislate for those States; other States may adopt later by resolution. Such Parliamentary law can be amended/repealed only by Parliament (not by States) though on like resolution mechanism.",
+  "article 253": "Parliament's power to implement international treaties/agreements/conventions: notwithstanding federal distribution, Parliament may legislate for whole or any part of India to give effect to international obligations.",
+  "article 254": "Repugnancy in Concurrent List: if State law conflicts with Parliamentary law, Parliamentary law prevails and State law is void to extent of repugnancy. Exception: State law reserved for and assented to by President prevails in that State, but Parliament can later override/amend/repeal it.",
+  "article 255": "Procedural recommendation/sanction safeguard: law is not invalid merely because required prior recommendation/sanction under Constitution was absent, if the relevant assent (President or Governor, as applicable) has ultimately been given.",
+  "article 256": "Obligation of States and Union directions: State executive power shall ensure compliance with Parliamentary laws and existing laws applying in that State; Union executive power extends to giving directions to a State for that purpose.",
+  "article 257": "Control of Union over States in certain cases: State executive power shall not impede Union executive power; Union may issue directions accordingly. Union may also direct States on construction/maintenance of means of communication of national/military importance and measures for protection of railways; additional costs in carrying out such directions are compensated as constitutionally provided.",
+  "article 257A": "Article 257A (assistance to States by deployment of Union forces) was inserted by 42nd Amendment and omitted by 44th Amendment.",
+  "article 258": "Power of Union to confer functions on States: President may, with consent of State Government, entrust Union executive functions to that State or its officers, conditionally or unconditionally; Parliament may also confer powers and impose duties on State authorities for Union laws.",
+  "article 258A": "Power of States to entrust functions to Union: Governor of a State may, with consent of Government of India, entrust State executive functions to Union Government or its officers, conditionally or unconditionally.",
+  "article 259": "Article 259 (Armed Forces in Part B States) stood repealed by the Constitution (Seventh Amendment) Act, 1956.",
+  "article 260": "Jurisdiction of Union in relation to territories outside India: Government of India may, by agreement with government of a foreign territory, undertake executive/legislative/judicial functions vested in that government, subject to and governed by law relating to exercise of foreign jurisdiction.",
+  "article 261": "Full faith and credit: public acts, records and judicial proceedings of Union and every State receive full faith and credit throughout India. Final judgments/orders in civil proceedings are capable of execution anywhere in India according to law.",
+  "article 262": "Adjudication of inter-State river water disputes: Parliament may by law provide adjudication mechanism for disputes relating to waters of inter-State rivers/river valleys and may by law exclude jurisdiction of Supreme Court and other courts in such disputes.",
+  "article 263": "Inter-State Council: if President considers that public interests would be served, he may establish a Council to inquire into and advise on inter-State disputes, discuss subjects of common interest among Union and States, and make recommendations for better policy coordination.",
+  "article 264": "Interpretation for Part XII, Chapter I (Finance): key terms used in fiscal distribution provisions are to be read as constitutionally defined for Union-State financial relations.",
+  "article 265": "No tax shall be levied or collected except by authority of law; UPSC trap: both levy and collection require legal authority.",
+  "article 266": "Consolidated Funds and Public Accounts: all revenues received by Government of India and loans raised form Consolidated Fund of India; similarly for each State's Consolidated Fund. Other public moneys received are credited to Public Account. No money from Consolidated Fund can be appropriated except in accordance with law and constitutional procedure.",
+  "article 267": "Contingency Fund: Parliament may establish Contingency Fund of India and State Legislature may establish Contingency Fund of State for urgent/unforeseen expenditure pending legislative authorization.",
+  "article 268": "Certain duties levied by Union but collected and appropriated by States (within State): includes stamp duties and duties of excise on medicinal and toilet preparations as constitutionally specified.",
+  "article 268A": "Article 268A (service tax) was inserted by 88th Amendment and omitted by 101st Amendment with GST restructuring.",
+  "article 269": "Taxes levied and collected by Union but assigned to States in manner provided by Parliamentary law (on principles for inter-State transactions as constitutionally framed).",
+  "article 269A": "GST on supplies in course of inter-State trade/commerce is levied and collected by Government of India and apportioned between Union and States in manner provided by Parliament on recommendation of GST Council; import is deemed inter-State supply.",
+  "article 270": "Distribution of certain taxes between Union and States: taxes/duties referred in this article are levied and collected by Union and distributed between Union and States in prescribed shares; distribution principles are based on Finance Commission recommendations and constitutional/statutory scheme.",
+  "article 271": "Surcharge for purposes of Union: notwithstanding Articles 269 and 270, Parliament may at any time increase duties/taxes referred there by surcharge for Union purposes; entire proceeds belong to Union.",
+  "article 272": "Article 272 (taxes levied and distributed between Union and States) stood omitted by the Constitution (Eightieth Amendment) Act, 2000.",
+  "article 273": "Grants in lieu of export duty on jute and jute products: constitutional transitional grant provision for specified States, subject to constitutional conditions and temporal framework.",
+  "article 274": "Prior recommendation of President required for certain taxation Bills affecting States' interests (for example, Bills varying principles of distribution or affecting surcharge/taxation structure in specified constitutional ways).",
+  "article 275": "Grants from Union to certain States: Parliament may provide statutory grants-in-aid of revenues of States in need of assistance; special grants for welfare of Scheduled Tribes and administration of Scheduled Areas/tribal areas are constitutionally envisaged.",
+  "article 276": "Taxes on professions, trades, callings and employments: States/local authorities may levy such taxes subject to constitutional ceiling per person per year (as amended by Parliament); this does not limit Parliament's power to tax income under Union law.",
+  "article 277": "Savings clause for pre-Constitution taxes/fees/cesses: certain existing State/local levies may continue until Parliament otherwise provides, notwithstanding distribution changes.",
+  "article 278": "Article 278 (agreements with Part B States) stood omitted by the Constitution (Seventh Amendment) Act, 1956.",
+  "article 279": "Calculation of 'net proceeds' and related fiscal figures for constitutional distribution is determined and certified by CAG; CAG's certificate is final in constitutional text.",
+  "article 279A": "GST Council (101st Amendment): constituted by President; Chairperson is Union Finance Minister, with Union MoS (Finance/Revenue) and State Finance/Taxation Ministers as members. Quorum is one-half of total members. Decisions require not less than three-fourths of weighted votes of members present and voting (Union weight one-third, States together two-thirds).",
+  "article 280": "Finance Commission: President constitutes Finance Commission every five years or earlier as needed; Commission (Chairman + four members) recommends distribution of net tax proceeds between Union and States, allocation among States, principles for grants-in-aid under Article 275, and other referred fiscal matters (including local body augmentation under later constitutional provisions).",
+  "article 281": "Finance Commission recommendations and explanatory memorandum as to action taken are laid before each House of Parliament by President.",
+  "article 282": "Discretionary grants for public purpose: Union or State may make grants for any public purpose, even if the subject lies outside its legislative competence. UPSC link: constitutional basis often cited for grants-in-aid style schemes.",
+  "article 283": "Custody and operation of Consolidated Funds, Contingency Funds, and Public Accounts of Union and States are regulated by constitutional and statutory rules made under this article.",
+  "article 284": "Moneys received by public servants and courts (for example, suitors' deposits) are to be paid into the appropriate public account and handled as per law.",
+  "article 285": "Union property is exempt from State taxation unless Parliament otherwise provides; constitutional savings exist for certain pre-Constitution levies until Parliament legislates.",
+  "article 286": "States cannot tax supply/sale of goods or services when transaction is outside the State or in course of import/export; Parliament formulates principles for determining such transactions.",
+  "article 287": "States cannot tax electricity consumed by Government of India, or sold to Government of India for its consumption, unless Parliament otherwise provides.",
+  "article 288": "States face constitutional restrictions on taxing water/electricity in certain inter-State river-valley project contexts; exceptions can operate per constitutional conditions including Presidential assent where required.",
+  "article 289": "Property and income of a State are exempt from Union taxation; however, Parliament may tax State trade/business income unless it is declared incidental to ordinary governmental functions.",
+  "article 290": "Provides for adjustment regarding certain expenses and pensions between Union and States as constitutionally provided.",
+  "article 290A": "Requires annual payments from Consolidated Fund of Kerala and Tamil Nadu to specified Devaswom Funds.",
+  "article 291": "Article 291 (Privy Purses) was omitted by the Constitution (Twenty-sixth Amendment) Act, 1971.",
+  "article 292": "Union borrowing: Government of India may borrow on the security of Consolidated Fund of India within limits fixed by Parliament.",
+  "article 293": "State borrowing: States may borrow on security of State Consolidated Fund within limits fixed by State Legislature; if indebted to Union, further borrowing needs Union consent and may carry conditions.",
+  "article 294": "Succession to property, assets, rights, liabilities of Governor's Provinces and Indian Dominion in relation to Union and corresponding States after constitutional commencement.",
+  "article 295": "Succession to property, assets, rights, liabilities in other pre-Constitution cases (including Indian States) as constitutionally structured.",
+  "article 296": "Property accruing by escheat, lapse, or as bona vacantia vests in State; if located in a Union Territory, it vests in Union.",
+  "article 297": "All lands, minerals, and other things of value underlying ocean within territorial waters, continental shelf, and EEZ vest in Union of India.",
+  "article 298": "Executive power of Union and States includes carrying on trade/business, and acquisition, holding, disposal of property, and making contracts.",
+  "article 299": "Government contracts must be expressed in name of President/Governor and executed by authorized persons in prescribed manner; President/Governor are not personally liable.",
+  "article 300": "Union of India and States may sue or be sued in their respective names, subject to constitutional and statutory provisions.",
+  "article 300A": "Right to property: no person shall be deprived of property save by authority of law. It is a constitutional legal right (not a Fundamental Right) after the 44th Amendment.",
+  "article 301": "Freedom of trade, commerce and intercourse throughout India is guaranteed, but subject to other provisions of Part XIII.",
+  "article 302": "Parliament may by law impose restrictions on inter-State or intra-State trade/commercial freedom under Article 301 in the public interest.",
+  "article 303": "Neither Parliament nor State Legislature can make trade laws preferring one State over another or discriminating between States; exception: Parliament may do so to deal with scarcity of goods in any part of India.",
+  "article 304": "State Legislature may: (a) impose non-discriminatory taxes on imported goods from other States, and (b) impose reasonable restrictions on trade in public interest; a Bill under 304(b) needs prior Presidential sanction.",
+  "article 305": "Saving clause protects existing laws and laws providing for State monopolies from invalidation under Part XIII, subject to constitutional amendment history.",
+  "article 306": "Article 306 (certain trade restrictions for former Part B States) was omitted by the Constitution (Seventh Amendment) Act, 1956.",
+  "article 307": "Parliament may appoint by law an authority to carry out purposes of Articles 301 to 304.",
+  "article 308": "Interpretation provision for Part XIV: expression 'State' is to be read as specified in constitutional text for this Part.",
+  "article 309": "Recruitment and service conditions of Union/State services may be regulated by appropriate Legislature; until such law, President/Governor may make rules with force of law.",
+  "article 310": "Doctrine of pleasure: Defence services, civil services of Union, All-India services, and civil posts are held during pleasure of President/Governor, subject to constitutional safeguards.",
+  "article 311": "Civil servant safeguards: (1) dismissal/removal cannot be by authority subordinate to appointing authority; (2) no dismissal/removal/reduction in rank without inquiry and reasonable opportunity, except constitutional exceptions (criminal conviction, impracticability, security of State).",
+  "article 312": "Parliament may create one or more All-India Services (including an All-India Judicial Service) if Rajya Sabha passes resolution by not less than two-thirds of members present and voting.",
+  "article 312A": "Parliament may vary/revoke service conditions of certain pre-Constitution service officers as provided in this Article.",
+  "article 313": "Transitional continuation: pre-Constitution service laws continue until altered, repealed, or amended by competent authority.",
+  "article 314": "Article 314 (protection of existing officers of certain services) was repealed by the Constitution (Twenty-eighth Amendment) Act, 1972.",
+  "article 315": "Public Service Commissions: Union has UPSC; each State has SPSC; two or more States may have Joint State PSC by Parliamentary law.",
+  "article 316": "Chairman/members of UPSC and SPSC are appointed by President/Governor. Term: six years or until 65 years (UPSC) / 62 years (SPSC), whichever earlier; constitutional eligibility conditions apply.",
+  "article 317": "Removal of PSC Chairman/member for misbehaviour is by President after Supreme Court inquiry. Suspension during inquiry and removal on specified other grounds (insolvency, paid employment, infirmity) are constitutionally provided.",
+  "article 318": "President/Governor determines number of PSC members and conditions of service of members/staff through regulations, subject to Constitution.",
+  "article 319": "Post-tenure employment restrictions for PSC Chairmen/members are specifically laid down to protect independence of commissions.",
+  "article 320": "PSC functions include conducting examinations and being consulted on recruitment, appointments, promotions, transfers, disciplinary matters, and claims, subject to regulations excluding specified matters.",
+  "article 321": "Parliament/State Legislature may by law extend functions of UPSC/SPSC in respect of services under Union/State or other authorities.",
+  "article 322": "Expenses of UPSC/SPSC (including salaries, allowances, pensions) are charged on Consolidated Fund of India/State.",
+  "article 323": "UPSC/SPSC submit annual reports to President/Governor, who lay them before Parliament/State Legislature with memorandum on cases where advice was not accepted.",
+  "article 324": "Superintendence, direction, and control of elections to Parliament, State Legislatures, and offices of President/Vice-President is vested in Election Commission. It consists of CEC and such number of Election Commissioners as President may fix, subject to law; CEC removal is like Supreme Court Judge and other ECs are removable on CEC recommendation.",
+  "article 325": "One general electoral roll for every territorial constituency; exclusion from electoral roll on grounds only of religion, race, caste, or sex is prohibited.",
+  "article 326": "Lok Sabha and State Assembly elections are based on adult suffrage; every citizen meeting age and legal qualifications can vote. Voting age is 18 years (61st Amendment).",
+  "article 327": "Parliament may make laws on all matters relating to elections to Parliament and State Legislatures (including preparation of rolls, delimitation, and conduct), subject to Constitution.",
+  "article 328": "State Legislature may make laws regarding elections to its House/Houses insofar as Parliament has not made provision on that matter.",
+  "article 329": "Courts cannot question validity of laws relating to delimitation/allotment of seats; elections can be challenged only through election petitions in manner provided by law.",
+  "article 329A": "Article 329A (special provision for Prime Minister/Speaker election disputes) was inserted by 39th Amendment and omitted by 44th Amendment.",
+  "article 330": "Reservation of seats for Scheduled Castes and Scheduled Tribes in Lok Sabha is provided in proportion to population in States/UTs as constitutionally structured.",
+  "article 330A": "Reservation of seats for women in Lok Sabha (including within SC/ST reserved seats) is provided by the Constitution (106th Amendment).",
+  "article 331": "Article 331 (nomination of Anglo-Indian members to Lok Sabha) was omitted by the Constitution (104th Amendment) Act, 2019.",
+  "article 332": "Reservation of seats for SCs and STs in State Legislative Assemblies is constitutionally provided in proportion to population, with specific arrangements for certain States.",
+  "article 332A": "Reservation of seats for women in State Legislative Assemblies (including within SC/ST reserved seats) is provided by the Constitution (106th Amendment).",
+  "article 333": "Article 333 (nomination of Anglo-Indian member in State Assembly) was omitted by the Constitution (104th Amendment) Act, 2019.",
+  "article 334": "Time limit article for reservation/special representation has been periodically extended; as amended, SC/ST reservation in Lok Sabha and Assemblies continues up to 2030 under the 104th Amendment framework.",
+  "article 334A": "Women's reservation under Articles 330A and 332A comes into effect after delimitation undertaken after publication of first census figures after commencement of the 106th Amendment; reservation is for 15 years unless extended by Parliament.",
+  "article 335": "Claims of SCs and STs to services/posts shall be considered consistently with maintenance of administrative efficiency; proviso permits relaxation in qualifying marks/standards for promotion in favour of SC/ST.",
+  "article 336": "Special provision for Anglo-Indian community in certain services was a transitional provision with time-bound operation.",
+  "article 337": "Special educational grants for Anglo-Indian community was a transitional provision with time-bound operation.",
+  "article 338": "National Commission for Scheduled Castes: constitutional body to monitor safeguards, inquire into complaints, advise on planning, and report to President.",
+  "article 338A": "National Commission for Scheduled Tribes: constitutional body with functions parallel to Article 338 for ST safeguards and development matters.",
+  "article 338B": "National Commission for Backward Classes: constitutional body (102nd Amendment) for safeguards, complaints, advice, and reporting on socially and educationally backward classes.",
+  "article 339": "Union control over administration of Scheduled Areas and ST welfare: President may appoint Commission and Union may issue directions to States in specified matters.",
+  "article 340": "President may appoint a Commission to investigate conditions of backward classes and recommend steps for their advancement.",
+  "article 341": "Scheduled Castes list for each State/UT is notified by President; subsequent inclusion/exclusion can be done only by Parliament by law.",
+  "article 342": "Scheduled Tribes list for each State/UT is notified by President; subsequent inclusion/exclusion can be done only by Parliament by law.",
+  "article 342A": "Socially and educationally backward classes: President notifies Central List for Union purposes; Parliament can include/exclude from Central List; States/UTs may maintain their own lists for State purposes (105th Amendment framework).",
+  "article 343": "Official language of Union is Hindi in Devanagari script; form of numerals is international form of Indian numerals; continued use of English is provided by law.",
+  "article 344": "After constitutional intervals, President constitutes Official Language Commission and a Parliamentary Committee to review and recommend progressive use of Hindi and related language policy measures.",
+  "article 345": "State Legislature may adopt any one or more languages in use in State or Hindi as official language(s) of that State (subject to constitutional provisions).",
+  "article 346": "Language for communication between one State and another, and between State and Union, is as constitutionally provided (linked to language authorized for Union official purposes).",
+  "article 347": "If substantial proportion of a State's population desires use of a language, President may direct its recognition for specified purposes in that State.",
+  "article 348": "Language of Supreme Court/High Courts and authoritative texts of Bills, Acts, Ordinances, rules, regulations is English unless Parliament provides otherwise; limited High Court language authorization is possible with Presidential consent.",
+  "article 349": "Special procedure for language-related laws affecting Article 348 matters: prior Presidential sanction is required during constitutionally specified period.",
+  "article 350": "Every person is entitled to submit representations for redress of grievances in any language used in Union or in the State.",
+  "article 350A": "State and local authorities shall endeavour to provide adequate mother-tongue instruction facilities at primary stage for children belonging to linguistic minority groups.",
+  "article 350B": "Special Officer for linguistic minorities is appointed by President to investigate safeguards and report to President; reports are laid before Parliament and forwarded to States.",
+  "article 351": "Directive to Union for development of Hindi so it may serve as medium of expression of India's composite culture while drawing on forms, styles, and vocabulary of other Indian languages.",
+  "article 352": "National Emergency: President may proclaim emergency on grounds of war, external aggression, or armed rebellion. Parliamentary approval is required within constitutional time limit by special majority; each continuation needs periodic re-approval. 44th Amendment replaced 'internal disturbance' with 'armed rebellion'.",
+  "article 353": "Effect of National Emergency: Union executive power extends to giving directions to States, and Parliament gains power to legislate on State List matters as constitutionally provided.",
+  "article 354": "During National Emergency, President may by order modify constitutional provisions relating to distribution of revenues between Union and States for the emergency period.",
+  "article 355": "Duty of Union: protect every State against external aggression and internal disturbance, and ensure governance of every State is carried on in accordance with Constitution.",
+  "article 356": "Failure of constitutional machinery in State: President may issue proclamation (President's Rule), subject to Parliamentary approval within constitutional timeline; continuation beyond specified periods is subject to constitutional conditions and limits.",
+  "article 357": "When Article 356 proclamation is in force, Parliament may confer State legislative powers on President or specified authority, with constitutional limits.",
+  "article 358": "When emergency is proclaimed on grounds of war or external aggression, Article 19 freedoms stand suspended to extent constitutionally provided; this does not apply to armed rebellion emergency.",
+  "article 359": "President may suspend right to move courts for enforcement of specified Fundamental Rights during emergency, but rights under Articles 20 and 21 remain enforceable.",
+  "article 360": "Financial Emergency: President may proclaim if financial stability/credit of India or any part is threatened; constitutional consequences include directions on financial propriety and possible salary reductions, including of judges.",
+  "article 361": "President and Governors enjoy constitutional immunity: no answerability to courts for official acts, no criminal proceedings during term, no arrest/imprisonment, and civil proceedings require prior notice under prescribed conditions.",
+  "article 361A": "Protection for publication of substantially true reports of Parliamentary/State Legislature proceedings, subject to constitutional exceptions (for example, secret sittings).",
+  "article 361B": "A person disqualified under Tenth Schedule for defection is also disqualified from being appointed to remunerative political post for period of disqualification.",
+  "article 362": "Article 362 (rights and privileges of Rulers of Indian States) was repealed by the Constitution (Twenty-sixth Amendment) Act, 1971.",
+  "article 363": "Bar to judicial interference in certain disputes arising from pre-Constitution treaties, agreements, covenants, sanads, and related instruments concerning former Indian States/rulers.",
+  "article 363A": "Recognition granted to Rulers of Indian States ceased and privy purses were abolished (26th Amendment framework).",
+  "article 364": "Special provisions as to major ports and aerodromes: President may issue directions to States in specified matters where Union interests require.",
+  "article 365": "If a State fails to comply with or give effect to Union directions under the Constitution, President may hold that a situation has arisen in which State government cannot be carried on in accordance with Constitution.",
+  "article 366": "Definitions clause (constitutional dictionary) for terms used throughout the Constitution.",
+  "article 367": "Interpretation: unless context otherwise requires, General Clauses Act principles apply to interpretation of Constitution.",
+  "article 368": "Power and procedure of constitutional amendment: most amendments need special majority in both Houses; specified federal matters additionally require ratification by at least half of State Legislatures. Judicial doctrine: amendment power is subject to Basic Structure limitation.",
+  "article 369": "Temporary power (for five years from commencement) enabling Parliament to legislate on certain State List matters as if in Concurrent List.",
+  "article 370": "Temporary provision with respect to Jammu and Kashmir; constitutional operation has been substantially altered by Presidential Orders and related 2019 reorganization measures.",
+  "article 371": "Special provision for Maharashtra and Gujarat, including separate development boards for specified regions and equitable allocation considerations.",
+  "article 371A": "Special provision for Nagaland: parliamentary laws on specified religious/social practices, customary law/procedure, civil-criminal justice per customary law, and land/resources apply only as constitutionally conditioned.",
+  "article 371B": "Special provision for Assam: provision for a committee of Legislative Assembly members from specified tribal areas.",
+  "article 371C": "Special provision for Manipur: committee of Assembly members from Hill Areas and related Governor reporting responsibilities.",
+  "article 371D": "Special provisions for Andhra Pradesh or Telangana for equitable opportunities/facilities in public employment and education; includes local cadres and administrative tribunal framework.",
+  "article 371E": "Parliament may by law provide for establishment of a Central University in Andhra Pradesh.",
+  "article 371F": "Special provisions for Sikkim covering legislative representation, validation/continuance of existing laws, and other transitional protections.",
+  "article 371G": "Special provision for Mizoram: parliamentary laws on specified religious/social practices, customary law/procedure, civil-criminal justice per customary law, and land/resources apply only as constitutionally conditioned.",
+  "article 371H": "Special provision for Arunachal Pradesh, including Governor's special responsibility for law and order subject to constitutional framework.",
+  "article 371I": "Special provision for Goa: Legislative Assembly of Goa shall consist of not less than thirty members.",
+  "article 371J": "Special provisions for Karnataka (Kalyana Karnataka/Hyderabad-Karnataka region): equitable opportunities, reservation and development measures through constitutional mechanism.",
+  "article 372": "Continuance in force of existing laws after commencement of Constitution, subject to adaptation and constitutional consistency.",
+  "article 372A": "Power of President to adapt laws for bringing them in accord with constitutional amendments, as provided in this transitional article.",
+  "article 373": "Power of President to make order in respect of persons under preventive detention in certain transitional cases.",
+  "article 374": "Transitional provisions regarding Federal Court judges and pending proceedings before Federal Court/His Majesty in Council.",
+  "article 375": "Courts, authorities, and officers existing before commencement continue to function subject to Constitution.",
+  "article 376": "Transitional provisions concerning judges of High Courts.",
+  "article 377": "Transitional provisions concerning Comptroller and Auditor-General of India.",
+  "article 378": "Transitional provisions concerning Public Service Commissions.",
+  "article 378A": "Special provision as to duration of Andhra Pradesh Legislative Assembly (transitional/special context).",
+  "article 379": "Article 379 (provisional Parliament and Speaker/Deputy Speaker thereof) was omitted.",
+  "article 380": "Article 380 (provision as to President) was omitted.",
+  "article 381": "Article 381 (Council of Ministers of the President) was omitted.",
+  "article 382": "Article 382 (provisional legislatures for Part A States) was omitted.",
+  "article 383": "Article 383 (provision as to Governors of Provinces) was omitted.",
+  "article 384": "Article 384 (Council of Ministers of Governors) was omitted.",
+  "article 385": "Article 385 (provisional legislatures in Part B States) was omitted.",
+  "article 386": "Article 386 (Council of Ministers for Part B States) was omitted.",
+  "article 387": "Article 387 (special provision as to determination of population for certain elections) was omitted.",
+  "article 388": "Article 388 (filling of casual vacancies in provisional Parliament/Legislatures) was omitted.",
+  "article 389": "Article 389 (Bills pending in Dominion/Provincial/Indian State legislatures) was omitted.",
+  "article 390": "Article 390 (money received/raised or expenditure incurred between commencement and 31 March 1950) was omitted.",
+  "article 391": "Article 391 (President's power to amend First and Fourth Schedules in contingencies) was omitted.",
+  "article 392": "Power of President to remove difficulties in giving effect to constitutional provisions during transition.",
+  "article 393": "Short title: this Constitution may be called the Constitution of India.",
+  "article 394": "Commencement: specified provisions came into force on 26 November 1949; remaining provisions came into force on 26 January 1950.",
+  "article 394A": "Authoritative text of Constitution in Hindi is provided as constitutionally recognized.",
+  "article 395": "Repeals: Indian Independence Act, 1947 and Government of India Act, 1935, together with related enactments, stand repealed."
+}
 
-  "article 87": "The President gives a special speech to BOTH Houses sitting together on two occasions: (1) after every general election, and (2) at the start of each year's first session. This speech explains why Parliament has been called. After the speech, Parliament holds a 'Motion of Thanks' debate where MPs can even move amendments to the speech — if an amendment passes, it can act like a no-confidence signal against the government.",
+    let bookmarks = JSON.parse(localStorage.getItem('bookmarks_2026')) || [];
+    let activeKey = "";
+    let isSidebarCollapsed = localStorage.getItem('sidebar_collapsed_2026') === '1';
 
-  "article 88": "Ministers and the Attorney-General can speak and participate in ANY House, any joint sitting, or any committee they're assigned to — even if it's not their own House. BUT they can only VOTE in the House they are actually a member of. They enjoy full Parliamentary privileges while participating.",
+    function applySidebarState() {
+        document.body.classList.toggle('sidebar-collapsed', isSidebarCollapsed);
+        const icon = document.getElementById('sidebarToggleIcon');
+        const btn = document.getElementById('sidebarToggle');
+        if (isSidebarCollapsed) {
+            icon.className = 'fa-solid fa-angles-right';
+            btn.title = "Show sidebar";
+        } else {
+            icon.className = 'fa-solid fa-angles-left';
+            btn.title = "Hide sidebar";
+        }
+    }
 
-  "article 89": "The Vice-President of India automatically becomes the Chairman of Rajya Sabha (ex-officio — no separate election needed). Important: the VP/Chairman is NOT a member of Rajya Sabha — he presides over it but does not have a first-instance vote; he only has a casting vote in case of a tie. Rajya Sabha also elects one of its own members as Deputy Chairman.",
+    function toggleSidebar() {
+        isSidebarCollapsed = !isSidebarCollapsed;
+        localStorage.setItem('sidebar_collapsed_2026', isSidebarCollapsed ? '1' : '0');
+        applySidebarState();
+    }
 
-  "article 90": "The Deputy Chairman of Rajya Sabha loses the post if: they leave Rajya Sabha; they resign (resignation letter goes to the Chairman); or they are removed. Removal requires a majority of ALL current RS members (Effective Majority — vacancies don't count). A 14-day advance notice is mandatory before the removal motion is moved.",
+    function keyToId(key) {
+        return `article-${key.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    }
 
-  "article 91": "If the Chairman's post is empty OR the VP is busy acting as President, the Deputy Chairman steps in. If both are absent from a sitting, whoever the RS rules designate takes over. Anyone filling in has all the same powers as the Chairman.",
+    function escapeHtml(text) {
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
 
-  "article 92": "When a removal motion against the Chairman (VP) or Deputy Chairman is being discussed, THAT person cannot preside — even if present. CRITICAL VOTING DISTINCTION: The Chairman (VP) during his OWN removal resolution — can speak and participate BUT CANNOT VOTE AT ALL (not even a first-instance vote). The Deputy Chairman during his own removal resolution — can speak and CAN vote in the first instance but CANNOT cast a tie-breaking vote. This asymmetry exists because the Chairman is the VP who is not a member of RS, while the Deputy Chairman is a member. Compare with Article 96 (Speaker): the Speaker CAN vote in the first instance during his removal resolution.",
+    function updateBookmarkButton() {
+        const btn = document.getElementById('bookmarkBtn');
+        if (!activeKey) {
+            btn.classList.remove('active');
+            btn.innerHTML = '<i class="fa-regular fa-star"></i>';
+            btn.title = "Select an article from the left to bookmark";
+            return;
+        }
 
-  "article 93": "Lok Sabha must elect two of its own members as Speaker and Deputy Speaker. If either post falls vacant, a new election must be held as soon as possible.",
+        const isSaved = bookmarks.includes(activeKey);
+        btn.classList.toggle('active', isSaved);
+        btn.innerHTML = isSaved ? '<i class="fa-solid fa-star"></i>' : '<i class="fa-regular fa-star"></i>';
+        btn.title = `Bookmark ${activeKey}`;
+    }
 
-  "article 94": "The Speaker/Deputy Speaker loses the post if they leave Lok Sabha. To resign: Speaker writes to Deputy Speaker; Deputy Speaker writes to Speaker (cross-resignation). Removal needs a majority of ALL current LS members (Effective Majority) with 14 days' notice. Key point: the Speaker does NOT vacate the post when Lok Sabha is dissolved — they stay on until the brand-new Lok Sabha holds its very first meeting. Same rule applies to the Deputy Speaker.",
+    function setStarButtonState(button, key) {
+        const isSaved = bookmarks.includes(key);
+        button.classList.toggle('active', isSaved);
+        button.innerHTML = isSaved ? '<i class="fa-solid fa-star"></i>' : '<i class="fa-regular fa-star"></i>';
+        const title = isSaved ? `Remove bookmark for ${key}` : `Bookmark ${key}`;
+        button.title = title;
+        button.setAttribute('aria-label', title);
+    }
 
-  "article 95": "If the Speaker's post is vacant or the Speaker is acting as President, the Deputy Speaker steps in. If both are absent from a sitting, whoever the LS rules designate takes the chair. Anyone filling in has all the same powers as the Speaker.",
+    function syncArticleStarButtons(targetKey = "") {
+        const targetEncoded = targetKey ? encodeURIComponent(targetKey) : "";
+        document.querySelectorAll('.article-star-btn').forEach(button => {
+            if (!targetEncoded || button.dataset.key === targetEncoded) {
+                const key = decodeURIComponent(button.dataset.key || "");
+                setStarButtonState(button, key);
+            }
+        });
+    }
 
-  "article 96": "When a removal motion against the Speaker or Deputy Speaker is being debated, that person cannot preside — even if present. But they CAN speak, participate, AND vote in the FIRST INSTANCE on the resolution (unlike the Chairman under Art 92 who cannot vote at all). They cannot cast a casting/tie-breaking vote. This article is ONLY about presiding and first-instance voting during removal; normal casting vote rule is in Article 100.",
+    function toggleBookmarkForKey(key) {
+        if (!key || !(key in constitutionData)) return;
 
-  "article 97": "The salaries of the Chairman, Deputy Chairman, Speaker, and Deputy Speaker are 'Charged' on the Consolidated Fund of India — meaning Parliament cannot vote to cut them. They are automatically paid without any budget vote.",
+        if (bookmarks.includes(key)) {
+            bookmarks = bookmarks.filter(b => b !== key);
+        } else {
+            bookmarks.push(key);
+        }
 
-  "article 98": "Each House has its own separate staff/secretariat. Parliament can make laws about how this staff is recruited. Until Parliament makes such a law, the President can make interim rules after consulting the Speaker/Chairman. Some posts can be shared between both Houses.",
+        localStorage.setItem('bookmarks_2026', JSON.stringify(bookmarks));
+        updateCounter();
+        updateBookmarkButton();
+    }
 
-  "article 99": "Every newly elected/nominated MP must take an oath (or affirmation) as per the Third Schedule before the President or someone the President appoints. They CANNOT sit or vote in Parliament before taking this oath.",
+    function renderContent(data) {
+        const content = document.getElementById('content');
+        const keys = Object.keys(data);
 
-  "article 100": "Decisions in Parliament are by simple majority of members PRESENT and VOTING. The presiding officer (Speaker/Chairman) does NOT vote normally — they only cast a vote to break a TIE (called the Casting Vote). Quorum = 1/10th of the total membership of that House. If quorum is missing, the presiding officer must adjourn. Business can proceed despite vacant seats. Even if someone votes who wasn't supposed to, proceedings remain valid once discovered. Important budget term — 'Guillotine': on the last day allotted for budget discussion, ALL remaining Demands for Grants that haven't been discussed are automatically put to vote together without any debate.",
+        if (!keys.length) {
+            content.innerHTML = '<div class="empty-state">No articles match your search.</div>';
+            return;
+        }
 
-  "article 101": "You CANNOT be a member of both Parliament and a State Legislature at the same time — you must resign one. If you win two seats in the same House, both become void unless you pick one in time. If an MP skips ALL sittings for 60 days without the House's permission, they lose their seat (adjournment periods of 4+ days, prorogation periods, and leave granted by the House don't count toward the 60 days). Resignation only works if the presiding officer is satisfied it's genuine and not forced.",
+        content.innerHTML = keys.map(key => {
+            const isSaved = bookmarks.includes(key);
+            const label = isSaved ? `Remove bookmark for ${key}` : `Bookmark ${key}`;
+            return `
+            <article class="article-card ${key === activeKey ? 'active' : ''}" id="${keyToId(key)}">
+                <div class="article-card-header">
+                    <h3>${escapeHtml(key)}</h3>
+                    <button type="button" class="article-star-btn ${isSaved ? 'active' : ''}" data-key="${encodeURIComponent(key)}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
+                        <i class="fa-${isSaved ? 'solid' : 'regular'} fa-star"></i>
+                    </button>
+                </div>
+                <p>${escapeHtml(data[key])}</p>
+            </article>
+        `;
+        }).join('');
 
-  "article 102": "An MP gets disqualified if: they hold an Office of Profit under Central/State Government (unless Parliament exempts it); a court declares them of unsound mind; they are an undischarged insolvent; they are not an Indian citizen or hold foreign allegiance; they are convicted of certain offences under laws like the Representation of the People Act; or they are disqualified under the Tenth Schedule (anti-defection law). Parliament can add more disqualifications by law. TENTH SCHEDULE (Anti-Defection) details — An MP is disqualified for defection if: (1) they voluntarily give up party membership; (2) they vote or abstain contrary to the party whip without prior party permission (party has 15 days to condone it); (3) an independently elected member joins any political party after election; (4) a nominated member joins any political party after 6 months of taking their seat. EXCEPTIONS where defection does NOT disqualify: Merger — if at least 2/3 of the original legislative party members agree to merge with another party, neither the merging members nor those who stay are disqualified; Presiding Officer exception — a member who gives up party membership on becoming Speaker/Chairman and rejoins after leaving that post is not disqualified. NOTE: the old 'split' exception (1/3 members forming a new group) was DELETED by the 91st Amendment in 2003 — splits no longer protect from disqualification.",
-
-  "article 103": "If there's a question about whether an MP is disqualified (other than defection cases), it goes to the President. The President MUST follow whatever the Election Commission says — the EC's opinion is binding. The President's final decision cannot be challenged in any court. Defection cases are different — those are decided by the Speaker (for LS) or Chairman (for RS), not the President.",
-
-  "article 104": "If someone sits or votes in Parliament knowing they're disqualified or haven't yet taken the oath, they face a fine of ₹500 for EVERY DAY they do so. This money is recoverable as a debt to the Union.",
-
-  "article 105": "MPs have complete freedom of speech inside Parliament. Nothing said or voted in Parliament can be used against an MP in any court — ever. Publishing Parliament's official reports, votes, or proceedings is also protected. Until Parliament makes its own law defining privileges, the privileges of the British House of Commons as they existed on 20 June 1979 (the date the 44th Amendment came into force — NOT 1950 as commonly stated) apply. Ministers and the AG also enjoy these protections when participating. IMPORTANT: Parliamentary privileges do NOT extend to the President — the President is not a member of either House.",
-
-  "article 106": "MPs get paid whatever salaries and allowances Parliament decides by law.",
-
-  "article 107": "Any ordinary Bill (not Money Bill, not Constitutional Amendment) can start in EITHER House. Prorogation does NOT kill a pending Bill. If a Bill is pending in RS and LS hasn't yet passed it, dissolution of LS does NOT kill the Bill. BUT if a Bill is pending in LS itself, or LS has passed it but RS hasn't, it DIES when LS is dissolved.",
-
-  "article 108": "If the two Houses hit a deadlock on a Bill — one rejects it, they can't agree on amendments, or 6 months pass without the other House acting — the President can notify his intention to call a JOINT SITTING. Important: the 6-month count excludes any period when the receiving House is prorogued or adjourned for 4+ consecutive days. Once the President issues this notification, NEITHER House can proceed further with the Bill independently — it freezes until the Joint Sitting. If LS is dissolved AFTER the President's notification, the Joint Sitting still happens. At the Joint Sitting: decision is by simple majority of ALL members present and voting from both Houses combined; only LIMITED amendments are allowed — only those made necessary by the delay OR those on the exact points of disagreement between the Houses; no fresh amendments; the presiding officer's ruling on which amendments are admissible is FINAL. Presiding order: Speaker of LS → Deputy Speaker of LS → Deputy Chairman of RS (the Chairman/VP never presides a joint sitting). Lok Sabha's numerical strength (~543 members) vs Rajya Sabha's (~245 members) means LS effectively dominates — this is why it works as a de facto override of RS. Joint Sitting is NOT available for Money Bills or Constitution Amendment Bills. Historical use: Joint Sitting has been held only 3 times ever — Dowry Prohibition Bill (1961), Banking Service Commission Repeal Bill (1978), Prevention of Terrorism Act/POTA (2002).",
-
-  "article 109": "Money Bills can ONLY start in Lok Sabha — never in Rajya Sabha. After LS passes it, RS gets 14 days to return it with suggestions. LS can accept or ignore RS's suggestions — the Bill passes in whatever form LS decides. If RS doesn't return it within 14 days, it's automatically deemed passed by both Houses. RS has NO power to reject or amend a Money Bill — only suggest.",
-
-  "article 110": "A Bill is a Money Bill ONLY IF it deals EXCLUSIVELY with: taxes; government borrowing or guarantees; the Consolidated Fund or Contingency Fund; appropriation of money out of the Consolidated Fund; declaring expenditure as Charged or increasing Charged expenditure; receipt, custody or issue of money from the Consolidated Fund or public account, or AUDIT of the accounts of the Union or a State; or matters incidental to any of the above. A Bill is NOT a Money Bill just because it mentions fines, fees, or local taxes. The Speaker certifies whether a Bill is a Money Bill — this certificate is FINAL and no court can question it. The certificate must be stamped on the Bill when sent to RS and when sent to the President.",
-
-  "article 111": "Once Parliament passes a Bill, the President has three options — formally known as: (1) ABSOLUTE VETO: withhold assent permanently — the Bill dies. Used for Private Member Bills or when a new Cabinet advises the President to reject the old Cabinet's Bill. (2) SUSPENSIVE VETO: send it back for reconsideration with suggestions (cannot do this for Money Bills or Constitutional Amendment Bills). If Parliament passes it again with or without changes, the President MUST sign it — no second veto. (3) POCKET VETO: simply take NO action and keep the Bill pending indefinitely — the Indian Constitution sets NO time limit for the President to act (unlike the USA where the limit is 10 days), making India's 'pocket' bigger. For MONEY BILLS: President cannot return it, can only sign or withhold. For CONSTITUTIONAL AMENDMENT BILLS: the President MUST give assent — the 24th Amendment made this compulsory, no veto at all. For STATE BILLS reserved by Governor for President: President can exercise pocket veto and the state legislature CANNOT override it.",
-
-  "article 112": "The Union Budget = Annual Financial Statement. It splits spending into two buckets: CHARGED expenditure (non-votable — automatically paid, Parliament only discusses it) and VOTED expenditure (Parliament votes on this). Revenue and capital accounts must be shown separately. Charged items include: President's salary/expenses; salaries of RS Chairman & Deputy Chairman and LS Speaker & Deputy Speaker; Supreme Court judges' salaries/pensions; CAG's salary/expenses; UPSC expenses; government debt charges; court judgments/awards; and High Court judges' pensions.",
-
-  "article 113": "Parliament only discusses Charged expenditure — it cannot vote on it. Voted expenditure comes to Lok Sabha as 'Demands for Grants'. LS can approve, reduce, or reject a demand — but CANNOT increase it. Every demand must have the President's recommendation before it's moved. During voting on Demands for Grants, members can move CUT MOTIONS to oppose a demand — three types: (1) Policy Cut — reduce the demand to Re. 1, signalling total disapproval of the policy behind it; (2) Economy Cut — reduce the demand by a specific stated amount; (3) Token Cut — reduce the demand by Rs. 100, used to ventilate a specific grievance. CRITICAL: if a Cut Motion is passed by Lok Sabha, it is treated as a vote of no-confidence — the government must resign. In practice they rarely pass due to party discipline. 'Guillotine': on the last day fixed for budget voting, ALL remaining unvoted Demands are put to vote together without discussion — this ensures the budget is passed on time.",
-
-  "article 114": "After LS votes on grants, an Appropriation Bill must be passed to actually allow money to be withdrawn from the Consolidated Fund. No amendment to an Appropriation Bill is allowed if it tries to change the amount or destination of any already-voted grant. Only Parliament can authorise withdrawal — no money leaves without this law.",
-
-  "article 115": "Three special grants exist: Supplementary Grant — when the original budget amount runs short; Additional Grant — for a brand new service not in the original budget; Excess Grant — for spending that has ALREADY happened beyond what was approved (this needs Public Accounts Committee review and recommendation BEFORE Parliament votes on it).",
-
-  "article 116": "Three special financial tools: Vote on Account — advance money to run the government before the full budget is passed; Vote of Credit — a blank-cheque type grant for sudden, large, hard-to-specify needs (like war); Exceptional Grant — for a special purpose that is not part of normal services for that year.",
-
-  "article 117": "Financial Bill Type 1: Has BOTH Money Bill matters AND other matters. Can only be introduced in LS, only with the President's recommendation. Not a Money Bill (Speaker doesn't certify it). Financial Bill Type 2: Only involves spending from the Consolidated Fund (no Money Bill matters). Can be introduced in EITHER House without prior recommendation — but the President's recommendation is needed before either House considers (debates/votes on) it.",
-
-  "article 118": "Each House makes its own rules for how it runs. For Joint Sittings, the Speaker of Lok Sabha presides. The President makes rules for joint sittings after consulting both the Speaker and the Chairman.",
-
-  "article 119": "Parliament can pass a law to ensure financial business (budget etc.) is completed on time. If there is any conflict between that law and the House's own procedural rules, the law wins.",
-
-  "article 120": "Parliament conducts business in Hindi or English. If a member can't express themselves in either, the presiding officer can allow them to speak in their mother tongue. English was originally supposed to phase out in 1965 but Parliament has continued it by law.",
-
-  "article 121": "Parliament CANNOT discuss the behaviour or conduct of any Supreme Court or High Court judge while they are performing their duties — EXCEPT when a formal motion to remove that judge (impeachment) is being debated.",
-
-  "article 122": "No court can question or interfere with Parliament's internal proceedings by saying the procedure was irregular. Parliamentary officers/members who manage procedure and order inside the House cannot be hauled into court for how they exercise those powers.",
-
-  "article 123": "When BOTH Houses are not in session and urgent action is needed, the President can issue an Ordinance — it has the same legal force as a Parliament-passed law. Important: if even ONE House is in session, no Ordinance can be issued for matters that House can legislate on. An Ordinance dies 6 weeks after Parliament reassembles (counted from whichever House meets LATER). It can also die earlier if both Houses pass resolutions rejecting it (RS alone can kill it too). The President can withdraw an Ordinance anytime. Key limits: an Ordinance CANNOT amend the Constitution. The President CANNOT keep re-issuing the same Ordinance again and again just to avoid Parliament scrutinising it — the Supreme Court ruled that re-promulgation to bypass Parliament is unconstitutional (Krishna Kumar Singh case)."
-};
-
-        const container = document.getElementById('articlesContainer');
-        const searchInput = document.getElementById('searchInput');
-        const noResults = document.getElementById('noResults');
-
-        // Function to render articles
-        function renderArticles(filter = "") {
-            container.innerHTML = "";
-            let hasResults = false;
-
-            Object.entries(articlesData).forEach(([title, content]) => {
-                const lowerTitle = title.toLowerCase();
-                const lowerContent = content.toLowerCase();
-                const searchTerm = filter.toLowerCase();
-
-                if (lowerTitle.includes(searchTerm) || lowerContent.includes(searchTerm)) {
-                    hasResults = true;
-                    
-                    // Create Article Card
-                    const card = document.createElement('div');
-                    card.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all hover:shadow-md";
-                    
-                    // Format the content: Split by semicolons into bullet points for readability
-                    const bulletPoints = content.split(';').map(point => 
-                        `<li class="mb-2 pl-2 border-l-2 border-indigo-100">${point.trim()}</li>`
-                    ).join('');
-
-                    card.innerHTML = `
-                        <div class="p-5 cursor-pointer flex justify-between items-center bg-white hover:bg-slate-50 transition-colors" onclick="toggleCard(this)">
-                            <h2 class="text-xl font-bold text-indigo-700 uppercase tracking-wide">${title}</h2>
-                            <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
-                        </div>
-                        <div class="article-content p-6 pt-0 border-t border-slate-50">
-                            <ul class="text-slate-700 leading-relaxed list-none">
-                                ${bulletPoints}
-                            </ul>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                }
+        content.querySelectorAll('.article-star-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const key = decodeURIComponent(button.dataset.key || "");
+                toggleBookmarkForKey(key);
+                setStarButtonState(button, key);
             });
-
-            //noResults.classList.toggle('hidden', hasResults);
-        }
-
-        // Toggle Expand/Collapse
-        function toggleCard(headerElement) {
-            const content = headerElement.nextElementSibling;
-            const icon = headerElement.querySelector('i');
-            
-            //content.classList.toggle('hidden');
-            icon.classList.toggle('rotate-180');
-        }
-
-        // Event Listener for Search
-        searchInput.addEventListener('input', (e) => {
-            renderArticles(e.target.value);
         });
 
-        // Initial Render
-        renderArticles();
-    </script>
+        syncArticleStarButtons();
+    }
+
+    function updateTitle(data) {
+        document.getElementById('title').innerText = `All Articles (${Object.keys(data).length})`;
+    }
+
+    function renderList(data) {
+        const container = document.getElementById('articleList');
+        container.innerHTML = "";
+        Object.keys(data).forEach(key => {
+            const div = document.createElement('div');
+            div.className = `nav-item ${key === activeKey ? 'active' : ''}`;
+            div.innerHTML = `<span>${key}</span><i class="fa-solid fa-chevron-right"></i>`;
+            div.dataset.key = key;
+            div.onclick = () => selectArticle(key);
+            container.appendChild(div);
+        });
+    }
+
+    function selectArticle(key) {
+        activeKey = key;
+
+        document.querySelectorAll('.nav-item').forEach(el => {
+            el.classList.toggle('active', el.dataset.key === key);
+        });
+
+        document.querySelectorAll('.article-card').forEach(card => {
+            card.classList.toggle('active', card.id === keyToId(key));
+        });
+
+        const target = document.getElementById(keyToId(key));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        updateBookmarkButton();
+    }
+
+    function doSearch() {
+        const query = document.getElementById('searchBar').value.toLowerCase();
+        const filtered = {};
+        Object.keys(constitutionData).forEach(key => {
+            if (key.toLowerCase().includes(query) || constitutionData[key].toLowerCase().includes(query)) {
+                filtered[key] = constitutionData[key];
+            }
+        });
+        if (activeKey && !filtered[activeKey]) {
+            activeKey = "";
+        }
+        renderList(filtered);
+        renderContent(filtered);
+        updateTitle(filtered);
+        updateBookmarkButton();
+    }
+
+    function toggleBookmark() {
+        if (!activeKey) return;
+        toggleBookmarkForKey(activeKey);
+        syncArticleStarButtons(activeKey);
+    }
+
+    function updateCounter() {
+        document.getElementById('count').innerText = bookmarks.length;
+    }
+
+    function showBookmarks() {
+        const list = document.getElementById('bookmarkList');
+        list.innerHTML = bookmarks.length ? "" : "No saved articles.";
+        bookmarks.forEach(b => {
+            const d = document.createElement('div');
+            d.className = "modal-item";
+            d.innerText = b;
+            d.onclick = () => {
+                document.getElementById('searchBar').value = "";
+                doSearch();
+                selectArticle(b);
+                closeModal();
+            };
+            list.appendChild(d);
+        });
+        document.getElementById('modal').style.display = "block";
+    }
+
+    function closeModal() { document.getElementById('modal').style.display = "none"; }
+
+    // Init
+    renderList(constitutionData);
+    renderContent(constitutionData);
+    updateTitle(constitutionData);
+    updateBookmarkButton();
+    updateCounter();
+    applySidebarState();
+</script>
+
 </body>
 </html>
